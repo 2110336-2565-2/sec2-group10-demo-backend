@@ -1,9 +1,22 @@
+import * as Joi from '@hapi/joi';
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { UsersModule } from './users/users.module';
 
 @Module({
-  imports: [],
+  imports: [
+    UsersModule,
+    ConfigModule.forRoot({
+      validationSchema: Joi.object({
+        DATABASE_URI: Joi.string().required(),
+      }),
+    }),
+    MongooseModule.forRoot('mongodb://localhost:27017/client'),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
