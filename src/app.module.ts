@@ -15,7 +15,7 @@ import { UsersModule } from './users/users.module';
         DATABASE_URI: Joi.string().required(),
       }),
     }),
-    MongooseModule.forRoot('mongodb://localhost:27017/client'),
+    MongooseModule.forRoot(process.env.DATABASE_URI),
   ],
   controllers: [AppController],
   providers: [AppService],
