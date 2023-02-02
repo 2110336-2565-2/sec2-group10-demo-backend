@@ -1,5 +1,6 @@
 import { Model } from 'mongoose';
 import * as mongoose from 'mongoose';
+import * as bcrypt from 'bcrypt';
 
 import { Injectable } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
@@ -15,14 +16,16 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    //const password = createUserDto.password;
-    //createUserDto.password = await bcrypt.hash(password, saltOrRounds);
+    // hash password
+    const salt = await bcrypt.genSalt();
+    const password = createUserDto.password;
+    createUserDto.password = await bcrypt.hash(password, salt);
 
     //make email and username insensitivecase
     createUserDto.email = createUserDto.email.toLowerCase();
     createUserDto.username = createUserDto.username.toLowerCase();
 
-    let createdUser = new this.userModel(createUserDto);
+    const createdUser = new this.userModel(createUserDto);
     return createdUser.save();
   }
 }
