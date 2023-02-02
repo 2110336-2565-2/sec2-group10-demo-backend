@@ -1,4 +1,6 @@
 import { Controller, Post } from '@nestjs/common';
+import { Get } from '@nestjs/common/decorators/http/request-mapping.decorator';
+import { CreateUserDto } from './dto/create-user.dto';
 
 import { UsersService } from './users.service';
 
@@ -15,5 +17,9 @@ export class UsersController {
     };
     await this.usersService.create(mockUser);
     return true;
+  }
+  @Get()
+  async findAll(): Promise<CreateUserDto[]> {
+    return this.usersService.findAll();
   }
 }
