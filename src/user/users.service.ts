@@ -22,7 +22,7 @@ export class UsersService {
     createUserDto.email = createUserDto.email.toLowerCase();
     createUserDto.username = createUserDto.username.toLowerCase();
 
-    let createdUser = new this.userModel(createUserDto);
+    const createdUser = new this.userModel(createUserDto);
     return createdUser.save();
   }
 }
