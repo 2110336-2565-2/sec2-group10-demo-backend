@@ -15,7 +15,7 @@ version: '3.8'
 services:
   mongoRep1:
     container_name: mongoRep1
-    image: mongo:latest
+    image: mongo:6.0.4
     volumes:
       - ./mongors/data1:/data/db
       - ./rs-init.sh:/scripts/rs-init.sh
@@ -25,7 +25,7 @@ services:
 
   mongoRep2:
     container_name: mongoRep2
-    image: mongo:latest
+    image: mongo:6.0.4
     volumes:
       - ./mongors/data2:/data/db
     ports:
