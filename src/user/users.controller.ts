@@ -1,5 +1,7 @@
-import { Controller, Post } from '@nestjs/common';
+import { Controller, Param, Post } from '@nestjs/common';
+import { Body } from '@nestjs/common/decorators';
 import { Get } from '@nestjs/common/decorators/http/request-mapping.decorator';
+
 import { CreateUserDto } from './dto/create-user.dto';
 
 import { UsersService } from './users.service';
@@ -19,7 +21,17 @@ export class UsersController {
     return true;
   }
   @Get()
-  async findAll(): Promise<CreateUserDto[]> {
+  async getUsers(): Promise<CreateUserDto[]> {
     return this.usersService.findAll();
+  }
+
+  @Get(':id')
+  async getUser(@Param() params) {
+    return this.usersService.findById(params.id);
+  }
+
+  @Post()
+  async registerUser(@Body() createUserDto: CreateUserDto) {
+    return await this.usersService.create(createUserDto);
   }
 }
