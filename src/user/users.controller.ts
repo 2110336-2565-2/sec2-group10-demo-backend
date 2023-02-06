@@ -1,6 +1,12 @@
 import { Controller, Param, Post } from '@nestjs/common';
-import { Body } from '@nestjs/common/decorators';
-import { Get } from '@nestjs/common/decorators/http/request-mapping.decorator';
+import { Body, HttpCode, Res } from '@nestjs/common/decorators';
+import {
+  Delete,
+  Get,
+  Put,
+} from '@nestjs/common/decorators/http/request-mapping.decorator';
+import { HttpStatus } from '@nestjs/common/enums';
+import { Response } from 'express';
 
 import { CreateUserDto } from './dto/create-user.dto';
 
@@ -11,6 +17,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post('mockCreateUser')
+  @HttpCode(HttpStatus.CREATED)
   async create(): Promise<boolean> {
     const mockUser = {
       username: 'MockMan',
@@ -21,17 +28,41 @@ export class UsersController {
     return true;
   }
   @Get()
+  @HttpCode(HttpStatus.OK)
   async getUsers(): Promise<CreateUserDto[]> {
     return this.usersService.findAll();
   }
 
   @Get(':id')
+  @HttpCode(HttpStatus.OK)
   async getUser(@Param() params) {
     return this.usersService.findById(params.id);
   }
 
   @Post()
-  async registerUser(@Body() createUserDto: CreateUserDto) {
-    return await this.usersService.create(createUserDto);
+  @HttpCode(HttpStatus.CREATED)
+  async registerUser(
+    @Body() createUserDto: CreateUserDto,
+    @Res() res: Response,
+  ): Promise<Response> {
+    const user = await this.usersService.create(createUserDto);
+    return res.json({
+      username: user.username,
+      email: user.email,
+      id: user._id,
+      message: 'User created successfully',
+    });
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.OK)
+  async deleteUser(@Param() params) {
+    return this.usersService.delete(params.id);
+  }
+
+  @Put(':id')
+  @HttpCode(HttpStatus.OK)
+  async updateUser(@Param() params, @Body() user: CreateUserDto) {
+    return this.usersService.update(params.id, user);
   }
 }
