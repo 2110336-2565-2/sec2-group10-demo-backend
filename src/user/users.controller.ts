@@ -49,7 +49,6 @@ export class UsersController {
     return res.json({
       username: user.username,
       email: user.email,
-      id: user._id,
       message: 'User created successfully',
     });
   }
