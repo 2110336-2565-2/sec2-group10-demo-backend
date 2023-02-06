@@ -1,14 +1,14 @@
+import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
 import * as mongoose from 'mongoose';
-import * as bcrypt from 'bcrypt';
 
 import { Injectable } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common/exceptions';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 
 import { CreateUserDto } from './dto/create-user.dto';
-import { User, UserDocument } from './schema/users.schema';
 import { UserDto } from './dto/user.dto';
-import { NotFoundException } from '@nestjs/common/exceptions';
+import { User, UserDocument } from './schema/users.schema';
 
 @Injectable()
 export class UsersService {
