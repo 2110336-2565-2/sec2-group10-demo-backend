@@ -25,7 +25,7 @@ export class UsersController {
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   async getUser(@Param() params) {
-    return this.usersService.findById(params.id);
+    return this.usersService.findOneById(params.id);
   }
 
   @Post()
