@@ -16,17 +16,6 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post('mockCreateUser')
-  @HttpCode(HttpStatus.CREATED)
-  async create(): Promise<boolean> {
-    const mockUser = {
-      username: 'MockMan',
-      email: 'mock_man@mock.com',
-      password: '123456',
-    };
-    await this.usersService.create(mockUser);
-    return true;
-  }
   @Get()
   @HttpCode(HttpStatus.OK)
   async getUsers(): Promise<CreateUserDto[]> {
