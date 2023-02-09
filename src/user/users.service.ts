@@ -25,4 +25,15 @@ export class UsersService {
     const createdUser = new this.userModel(createUserDto);
     return createdUser.save();
   }
+
+  async findOne(filter: any, projection = {}): Promise<User | undefined> {
+    return await this.userModel.findOne(filter, projection);
+  }
+
+  async findOneUsername(
+    username: string,
+    projection = {},
+  ): Promise<User | undefined> {
+    return await this.findOne({ username: username.toLowerCase() }, projection);
+  }
 }
