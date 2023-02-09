@@ -3,9 +3,11 @@ import * as Joi from 'joi';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt/dist';
+import { MongooseModule } from '@nestjs/mongoose';
 import { PassportModule } from '@nestjs/passport';
 
-import { UsersModule } from '../user/users.module';
+import { User, UserSchema } from '../users/schema/users.schema';
+import { UsersModule } from '../users/users.module';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
@@ -18,8 +20,9 @@ import { LocalStrategy } from './strategies/local.strategy';
       }),
     }),
     JwtModule.register({
-      secret: process.env.JWT_SECRET,
+      secret: process.env.AUTH_SECRET,
     }),
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     PassportModule,
     UsersModule,
   ],
