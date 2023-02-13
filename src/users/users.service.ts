@@ -53,7 +53,7 @@ export class UsersService {
     return userDto;
   }
 
-  async findOneByUsername(username: string, projection = {}): Promise<UserDto> {
+  async findOneByUsername(username: string, projection = {}): Promise<User> {
     return this.userModel.findOne(
       { username: username.toLowerCase() },
       projection,
@@ -61,7 +61,7 @@ export class UsersService {
   }
 
   async update(id: string, user: CreateUserDto): Promise<UserDto> {
-    const userCheck = await this.findByUsername(user.username);
+    const userCheck = await this.findOneByUsername(user.username);
     if (userCheck && userCheck._id.toString() != id) {
       throw new NotFoundException(
         `User with name ${user.username} already exists`,
