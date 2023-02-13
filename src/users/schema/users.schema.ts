@@ -1,11 +1,17 @@
 import { Document, SchemaTypes, Types } from 'mongoose';
 
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { ApiProperty } from '@nestjs/swagger';
 
 export type UserDocument = User & Document;
 
 @Schema()
 export class User {
+  /**
+   * ID of the user
+   * @example 5ff4c9d8e4b0f8b8b8b8b8b8
+   */
+  @ApiProperty({ example: '5ff4c9d8e4b0f8b8b8b8b8b8' })
   @Prop({
     type: SchemaTypes.ObjectId,
     required: true,
@@ -17,6 +23,7 @@ export class User {
    * Username of the user
    * @example Saveng58
    */
+  @ApiProperty({ example: 'Saveng58' })
   @Prop({ required: true, unique: true })
   username: string;
 
@@ -24,6 +31,7 @@ export class User {
    * Password of the user
    * @example Password58
    */
+
   @Prop({ required: true, minlength: 5, select: false })
   password: string;
 
@@ -31,6 +39,7 @@ export class User {
    * email of the user
    * @example save-000@hotmail.com
    */
+  @ApiProperty({ example: 'save-000@hotmail.com' })
   @Prop({
     required: true,
     unique: true,
@@ -41,6 +50,7 @@ export class User {
   /**
    * Registration date of the user
    */
+  @ApiProperty({ example: '2021-01-01T00:00:00.000Z' })
   @Prop({
     default: function () {
       return Date.now();

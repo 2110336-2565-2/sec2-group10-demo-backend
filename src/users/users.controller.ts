@@ -16,6 +16,8 @@ import {
 } from '@nestjs/swagger';
 
 import { CreateUserDto } from './dto/create-user.dto';
+import { UserDto } from './dto/user.dto';
+import { User } from './schema/users.schema';
 import { UsersService } from './users.service';
 
 @ApiTags('users')
@@ -25,7 +27,7 @@ export class UsersController {
 
   @ApiOkResponse({
     description: 'Return users',
-    type: [CreateUserDto],
+    type: [User],
   })
   @Get()
   @HttpCode(HttpStatus.OK)
@@ -34,6 +36,10 @@ export class UsersController {
   }
 
   @ApiParam({ name: 'id', type: String, required: true })
+  @ApiOkResponse({
+    description: 'Return user',
+    type: UserDto,
+  })
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   async getUser(@Param() params) {
@@ -41,8 +47,8 @@ export class UsersController {
   }
 
   @ApiCreatedResponse({
-    description: 'User created successfully',
-    type: CreateUserDto,
+    description: 'Return created user',
+    type: UserDto,
   })
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -59,6 +65,10 @@ export class UsersController {
   }
 
   @ApiParam({ name: 'id' })
+  @ApiOkResponse({
+    description: 'Return deleted user',
+    type: Object,
+  })
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
   async deleteUser(@Param() params) {
@@ -66,6 +76,10 @@ export class UsersController {
   }
 
   @ApiParam({ name: 'id' })
+  @ApiOkResponse({
+    description: 'Return updated user',
+    type: UserDto,
+  })
   @Put(':id')
   @HttpCode(HttpStatus.OK)
   async updateUser(@Param() params, @Body() user: CreateUserDto) {
@@ -73,6 +87,10 @@ export class UsersController {
   }
 
   @ApiParam({ name: 'username' })
+  @ApiOkResponse({
+    description: 'Return user',
+    type: User,
+  })
   @Get('user/:username')
   @HttpCode(HttpStatus.OK)
   async findByUsername(@Param() params) {
