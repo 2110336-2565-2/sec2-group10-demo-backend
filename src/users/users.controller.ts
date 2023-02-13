@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common/decorators/http/request-mapping.decorator';
 import { HttpStatus } from '@nestjs/common/enums';
 
+import { Public } from '../auth/public_decorator';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
 
@@ -29,6 +30,7 @@ export class UsersController {
   }
 
   @Post()
+  @Public()
   @HttpCode(HttpStatus.CREATED)
   async registerUser(
     @Body() createUserDto: CreateUserDto,
@@ -57,6 +59,6 @@ export class UsersController {
   @Get('user/:username')
   @HttpCode(HttpStatus.OK)
   async findByUsername(@Param() params) {
-    return this.usersService.findByUsername(params.username);
+    return this.usersService.findOneByUsername(params.username);
   }
 }

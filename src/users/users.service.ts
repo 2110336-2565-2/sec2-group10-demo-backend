@@ -42,8 +42,8 @@ export class UsersService {
     return this.userModel.find();
   }
 
-  async findOneById(id: string): Promise<UserDto> {
-    const user = await this.userModel.findById(id);
+  async findOneById(id: string, projection = {}): Promise<UserDto> {
+    const user = await this.userModel.findById(id, projection);
     if (!user) {
       throw new NotFoundException(`There isn't any user with id: ${id}`);
     }
@@ -53,8 +53,11 @@ export class UsersService {
     return userDto;
   }
 
-  async findByUsername(username: string): Promise<UserDto> {
-    return this.userModel.findOne({ username: username.toLowerCase() });
+  async findOneByUsername(username: string, projection = {}): Promise<UserDto> {
+    return this.userModel.findOne(
+      { username: username.toLowerCase() },
+      projection,
+    );
   }
 
   async update(id: string, user: UserDto): Promise<UserDto> {
