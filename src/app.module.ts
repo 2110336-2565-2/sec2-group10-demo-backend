@@ -1,12 +1,15 @@
 import * as Joi from '@hapi/joi';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AuthModule } from './auth/auth.module';
+import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { MusicsModule } from './music/musics.module';
-import { UsersModule } from './user/users.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -16,10 +19,11 @@ import { UsersModule } from './user/users.module';
       }),
     }),
     MongooseModule.forRoot(process.env.DATABASE_URI),
+    AuthModule,
     UsersModule,
     MusicsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],
 })
 export class AppModule {}

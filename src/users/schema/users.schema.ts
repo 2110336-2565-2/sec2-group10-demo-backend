@@ -24,14 +24,18 @@ export class User {
    * Password of the user
    * @example Password58
    */
-  @Prop({ required: true })
+  @Prop({ required: true, minlength: 5, select: false })
   password: string;
 
   /**
    * email of the user
    * @example save-000@hotmail.com
    */
-  @Prop({ required: true })
+  @Prop({
+    required: true,
+    unique: true,
+    lowercase: true,
+  })
   email: string;
 
   /**
