@@ -11,6 +11,9 @@ export class MusicsService {
       name: 'Dump Music',
       url: dumpUrl,
       descrpition: 'Dump music for testing API',
+      artist: 'Dump Man',
+      coverImage:
+        'https://www.pngmart.com/files/11/Frog-Meme-PNG-Transparent.png',
     };
   }
 }
