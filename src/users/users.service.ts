@@ -17,7 +17,7 @@ export class UsersService {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
   ) {}
 
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto): Promise<CreateUserDto> {
     const user = await this.userModel.findOne({
       username: createUserDto.username.toLowerCase(),
     });
@@ -60,7 +60,13 @@ export class UsersService {
     );
   }
 
-  async update(id: string, user: UserDto): Promise<UserDto> {
+  async update(id: string, user: CreateUserDto): Promise<UserDto> {
+    const userCheck = await this.findByUsername(user.username);
+    if (userCheck && userCheck._id.toString() != id) {
+      throw new NotFoundException(
+        `User with name ${user.username} already exists`,
+      );
+    }
     try {
       const userUpdated = await this.userModel.findByIdAndUpdate(id, user, {
         new: true,
@@ -74,7 +80,7 @@ export class UsersService {
   async delete(id: string): Promise<UserDto> {
     try {
       const userDeleted = await this.userModel.findByIdAndDelete(id);
-      return userDeleted;
+      return new UserDto();
     } catch (err) {
       throw new NotFoundException(`There isn't any user with id: ${id}`);
     }
