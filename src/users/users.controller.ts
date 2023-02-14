@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common/decorators/http/request-mapping.decorator';
 import { HttpStatus } from '@nestjs/common/enums';
 import {
+  ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiNotFoundResponse,
@@ -24,6 +25,7 @@ import { User } from './schema/users.schema';
 import { UsersService } from './users.service';
 
 @ApiTags('users')
+@ApiBearerAuth()
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
