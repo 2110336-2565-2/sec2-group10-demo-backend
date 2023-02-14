@@ -3,7 +3,10 @@ import { Model } from 'mongoose';
 import * as mongoose from 'mongoose';
 
 import { Injectable } from '@nestjs/common';
-import { NotFoundException } from '@nestjs/common/exceptions';
+import {
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common/exceptions';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 
 import { CreateUserDto } from './dto/create-user.dto';
@@ -63,7 +66,7 @@ export class UsersService {
   async update(id: string, user: CreateUserDto): Promise<UserDto> {
     const userCheck = await this.findOneByUsername(user.username);
     if (userCheck && userCheck._id.toString() != id) {
-      throw new NotFoundException(
+      throw new ConflictException(
         `User with name ${user.username} already exists`,
       );
     }
