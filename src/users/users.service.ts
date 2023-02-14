@@ -29,6 +29,14 @@ export class UsersService {
         `User with name ${createUserDto.username} already exists`,
       );
     }
+    const email = await this.userModel.findOne({
+      email: createUserDto.email.toLowerCase(),
+    });
+    if (email) {
+      throw new ConflictException(
+        `Email ${createUserDto.username} already exists`,
+      );
+    }
     // hash password
     const salt = await bcrypt.genSalt();
     const password = createUserDto.password;
