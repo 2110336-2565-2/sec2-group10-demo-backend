@@ -9,6 +9,13 @@ import { AppModule } from './app.module';
 export const createApp = async () => {
   const app = await NestFactory.create(AppModule, new ExpressAdapter());
 
+  app.enableCors({
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+  });
+
   const config = new DocumentBuilder()
     .setTitle('Demo API')
     .addTag('users')
