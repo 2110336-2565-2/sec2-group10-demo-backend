@@ -54,14 +54,15 @@ export class UsersService {
   }
 
   async findOneById(id: string, projection = {}): Promise<UserDto> {
-    const user = await this.userModel.findById(id, projection);
-    if (!user) {
+    try {
+      const user = await this.userModel.findById(id, projection);
+      const userDto = new UserDto();
+      userDto.username = user.username;
+      userDto.email = user.email;
+      return userDto;
+    } catch (e) {
       throw new NotFoundException(`There isn't any user with id: ${id}`);
     }
-    const userDto = new UserDto();
-    userDto.username = user.username;
-    userDto.email = user.email;
-    return userDto;
   }
 
   async findOneByUsername(username: string, projection = {}): Promise<User> {
