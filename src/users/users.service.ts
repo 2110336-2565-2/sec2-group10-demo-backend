@@ -34,7 +34,7 @@ export class UsersService {
     });
     if (email) {
       throw new ConflictException(
-        `Email ${createUserDto.username} already exists`,
+        `Email ${createUserDto.email} already exists`,
       );
     }
     // hash password
