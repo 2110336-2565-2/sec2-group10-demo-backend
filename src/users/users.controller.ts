@@ -9,7 +9,9 @@ import {
 } from '@nestjs/common/decorators/http/request-mapping.decorator';
 import { HttpStatus } from '@nestjs/common/enums';
 import {
+  ApiConflictResponse,
   ApiCreatedResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiParam,
   ApiTags,
@@ -41,8 +43,12 @@ export class UsersController {
     description: 'Return user',
     type: UserDto,
   })
+  @ApiNotFoundResponse({
+    description: 'User not found',
+  })
   @Get(':id')
   @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.NOT_FOUND)
   async getUser(@Param() params) {
     return this.usersService.findOneById(params.id);
   }
@@ -51,9 +57,17 @@ export class UsersController {
     description: 'Return created user',
     type: UserDto,
   })
+  @ApiNotFoundResponse({
+    description: 'User not found',
+  })
+  @ApiConflictResponse({
+    description: 'Email already exists',
+  })
   @Post()
   @Public()
   @HttpCode(HttpStatus.CREATED)
+  @HttpCode(HttpStatus.NOT_FOUND)
+  @HttpCode(HttpStatus.CONFLICT)
   async registerUser(
     @Body() createUserDto: CreateUserDto,
     @Res() res: Response,
@@ -71,8 +85,12 @@ export class UsersController {
     description: 'Return deleted user',
     type: Object,
   })
+  @ApiNotFoundResponse({
+    description: 'User not found',
+  })
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.NOT_FOUND)
   async deleteUser(@Param() params) {
     return this.usersService.delete(params.id);
   }
@@ -82,8 +100,16 @@ export class UsersController {
     description: 'Return updated user',
     type: UserDto,
   })
+  @ApiNotFoundResponse({
+    description: 'User not found',
+  })
+  @ApiConflictResponse({
+    description: 'Email or Username already exists',
+  })
   @Put(':id')
   @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.NOT_FOUND)
+  @HttpCode(HttpStatus.CONFLICT)
   async updateUser(@Param() params, @Body() user: CreateUserDto) {
     return this.usersService.update(params.id, user);
   }

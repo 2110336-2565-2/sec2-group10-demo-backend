@@ -78,6 +78,12 @@ export class UsersService {
         `User with name ${user.username} already exists`,
       );
     }
+    const emailCheck = await this.userModel.findOne({
+      email: user.email.toLowerCase(),
+    });
+    if (emailCheck && emailCheck._id.toString() != id) {
+      throw new ConflictException(`Email ${user.email} already exists`);
+    }
     try {
       const userUpdated = await this.userModel.findByIdAndUpdate(id, user, {
         new: true,
