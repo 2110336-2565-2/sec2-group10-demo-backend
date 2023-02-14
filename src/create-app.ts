@@ -1,8 +1,8 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { ExpressAdapter } from '@nestjs/platform-express';
 import { SwaggerModule } from '@nestjs/swagger';
 import { DocumentBuilder } from '@nestjs/swagger/dist';
-import { ExpressAdapter } from '@nestjs/platform-express';
 
 import { AppModule } from './app.module';
 
@@ -18,6 +18,7 @@ export const createApp = async () => {
 
   const config = new DocumentBuilder()
     .setTitle('Demo API')
+    .addBearerAuth()
     .addTag('users')
     .build();
   const document = SwaggerModule.createDocument(app, config);

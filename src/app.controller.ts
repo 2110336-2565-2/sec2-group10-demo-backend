@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
-import { ApiQuery, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiQuery, ApiResponse } from '@nestjs/swagger';
 
 import { AppService } from './app.service';
 import { AuthService } from './auth/auth.service';
@@ -46,11 +46,12 @@ export class AppController {
   /**
    * logout
    */
+  @ApiBearerAuth()
   @Post('auth/logout')
   async logout(@Request() req) {
     return this.authService.logout(req);
   }
-
+  @ApiBearerAuth()
   @Get('profile')
   getProfile(@Request() req) {
     return req.user;

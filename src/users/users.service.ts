@@ -3,7 +3,10 @@ import { Model } from 'mongoose';
 import * as mongoose from 'mongoose';
 
 import { Injectable } from '@nestjs/common';
-import { NotFoundException } from '@nestjs/common/exceptions';
+import {
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common/exceptions';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 
 import { CreateUserDto } from './dto/create-user.dto';
@@ -26,6 +29,14 @@ export class UsersService {
         `User with name ${createUserDto.username} already exists`,
       );
     }
+    const email = await this.userModel.findOne({
+      email: createUserDto.email.toLowerCase(),
+    });
+    if (email) {
+      throw new ConflictException(
+        `Email ${createUserDto.email} already exists`,
+      );
+    }
     // hash password
     const salt = await bcrypt.genSalt();
     const password = createUserDto.password;
@@ -43,14 +54,15 @@ export class UsersService {
   }
 
   async findOneById(id: string, projection = {}): Promise<UserDto> {
-    const user = await this.userModel.findById(id, projection);
-    if (!user) {
+    try {
+      const user = await this.userModel.findById(id, projection);
+      const userDto = new UserDto();
+      userDto.username = user.username;
+      userDto.email = user.email;
+      return userDto;
+    } catch (e) {
       throw new NotFoundException(`There isn't any user with id: ${id}`);
     }
-    const userDto = new UserDto();
-    userDto.username = user.username;
-    userDto.email = user.email;
-    return userDto;
   }
 
   async findOneByUsername(username: string, projection = {}): Promise<User> {
@@ -63,9 +75,15 @@ export class UsersService {
   async update(id: string, user: CreateUserDto): Promise<UserDto> {
     const userCheck = await this.findOneByUsername(user.username);
     if (userCheck && userCheck._id.toString() != id) {
-      throw new NotFoundException(
+      throw new ConflictException(
         `User with name ${user.username} already exists`,
       );
+    }
+    const emailCheck = await this.userModel.findOne({
+      email: user.email.toLowerCase(),
+    });
+    if (emailCheck && emailCheck._id.toString() != id) {
+      throw new ConflictException(`Email ${user.email} already exists`);
     }
     try {
       const userUpdated = await this.userModel.findByIdAndUpdate(id, user, {
