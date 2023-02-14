@@ -1,0 +1,76 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Demo By Tuder Stack
+
+Parameters:
+  ProjectName:
+    Type: String
+    Description: 'Demo By Tuder API'
+    Default: 'demo-by-tuder-api'
+  Environment:
+    Type: String
+    AllowedValues:
+      - prod
+      - dev
+    Description: Environment in which the application will be deployed. Allowed values [dev, prod]
+
+Globals:
+  Function:
+    Runtime: nodejs16.x
+    Timeout: 29
+    Architectures:
+      - x86_64
+    Environment:
+      Variables:
+        # NODE_OPTIONS: '--enable-source-maps' # performance issues https://github.com/nodejs/node/issues/41541
+        REGION: !Sub '${AWS::Region}'
+        AUTH_SECRET: !Sub '{{resolve:ssm:/demoByTuder/${Environment}/authSecret}}'
+        DATABASE_URI: !Sub '{{resolve:ssm:/demoByTuder/${Environment}/databaseUri}}'
+
+Resources:
+  # IAM
+  LambdaExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/AmazonSSMFullAccess'
+  # LAMBDA
+  DemoByTuderAPIFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub '${ProjectName}-demo-by-tuder-api-${Environment}'
+      CodeUri: .
+      Handler: dist/lambda-main.handler
+      Events:
+        MainApi:
+          Type: HttpApi
+          Properties:
+            Path: '/{proxy+}'
+            Method: ANY
+            ApiId: !Ref MainApiGateway
+      Role: !GetAtt LambdaExecutionRole.Arn
+
+  # API GATEWAY
+  MainApiGateway:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      Description: !Sub '${ProjectName}-main-api-${Environment}'
+      CorsConfiguration:
+        AllowOrigins: "'*'"
+        AllowMethods: "'*'"
+        AllowHeaders: "'*'"
+
+Outputs:
+  ApiUrl:
+    Description: 'API Gateway URL'
+    Value: !Sub 'https://${MainApiGateway}.execute-api.${AWS::Region}.amazonaws.com'
+  ApiId:
+    Description: 'API Gateway ID'
+    Value: !Ref MainApiGateway
