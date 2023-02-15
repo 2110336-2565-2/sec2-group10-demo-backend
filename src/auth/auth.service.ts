@@ -15,10 +15,12 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, pass: string): Promise<any> {
-    const user = await this.userModel.findOne(
-      { email: email.toLowerCase() },
-      { password: 1 },
-    );
+    const user = await this.userModel
+      .findOne(
+        { email: email.toLowerCase() },
+        { password: 1, username: 1, email: 1 },
+      )
+      .lean();
     if (user && user.password) {
       const isMatch = await bcrypt.compare(pass, user.password);
       if (isMatch) {
@@ -30,9 +32,12 @@ export class AuthService {
   }
 
   async login(user: any) {
-    const payload = { email: user.email, sub: user.userId };
+    const payload = { email: user.email, sub: user._id };
     return {
-      access_token: this.jwtService.sign(payload),
+      name: user.username,
+      email: user.email,
+      accessToken: this.jwtService.sign(payload),
+      image: '',
     };
   }
 
