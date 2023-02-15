@@ -10,6 +10,7 @@ import {
 import { HttpStatus } from '@nestjs/common/enums';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiNotFoundResponse,
@@ -19,7 +20,7 @@ import {
 } from '@nestjs/swagger';
 
 import { Public } from '../auth/public_decorator';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto, UpdateUserDto } from './dto/create-user.dto';
 import { UserDto } from './dto/user.dto';
 import { User } from './schema/users.schema';
 import { UsersService } from './users.service';
@@ -76,7 +77,6 @@ export class UsersController {
   ): Promise<Response> {
     const user = await this.usersService.create(createUserDto);
     return res.json({
-      username: user.username,
       email: user.email,
       message: 'User created successfully',
     });
@@ -98,6 +98,7 @@ export class UsersController {
   }
 
   @ApiParam({ name: 'id' })
+  @ApiBody({ type: UpdateUserDto })
   @ApiOkResponse({
     description: 'Return updated user',
     type: UserDto,
@@ -112,7 +113,7 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   @HttpCode(HttpStatus.NOT_FOUND)
   @HttpCode(HttpStatus.CONFLICT)
-  async updateUser(@Param() params, @Body() user: CreateUserDto) {
+  async updateUser(@Param() params, @Body() user: UpdateUserDto) {
     return this.usersService.update(params.id, user);
   }
 
@@ -125,5 +126,16 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   async findByUsername(@Param() params) {
     return this.usersService.findOneByUsername(params.username);
+  }
+
+  @ApiParam({ name: 'email' })
+  @ApiOkResponse({
+    description: 'Return user',
+    type: User,
+  })
+  @Get('email/:email')
+  @HttpCode(HttpStatus.OK)
+  async findByEmail(@Param() params) {
+    return this.usersService.findOneByEmail(params.email);
   }
 }

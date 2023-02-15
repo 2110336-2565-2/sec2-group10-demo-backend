@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common/exceptions';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto, UpdateUserDto } from './dto/create-user.dto';
 import { UserDto } from './dto/user.dto';
 import { User, UserDocument } from './schema/users.schema';
 
@@ -21,34 +21,30 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<CreateUserDto> {
+    // Set email to lowercase
+    createUserDto.email = createUserDto.email.toLowerCase();
+
     const user = await this.userModel.findOne({
-      username: createUserDto.username.toLowerCase(),
-    });
-    if (user) {
-      throw new NotFoundException(
-        `User with name ${createUserDto.username} already exists`,
-      );
-    }
-    const email = await this.userModel.findOne({
       email: createUserDto.email.toLowerCase(),
     });
-    if (email) {
+    if (user) {
       throw new ConflictException(
-        `Email ${createUserDto.email} already exists`,
+        `User with email ${createUserDto.email} already exists`,
       );
     }
+
     // hash password
     const salt = await bcrypt.genSalt();
     const password = createUserDto.password;
     createUserDto.password = await bcrypt.hash(password, salt);
 
-    //make email and username insensitivecase
-    createUserDto.email = createUserDto.email.toLowerCase();
-    createUserDto.username = createUserDto.username.toLowerCase();
+    // Attach username to createUserDto
+    Object.assign(createUserDto, { username: createUserDto.email });
 
     const createdUser = new this.userModel(createUserDto);
     return createdUser.save();
   }
+
   async findAll(): Promise<User[]> {
     return this.userModel.find();
   }
@@ -72,7 +68,11 @@ export class UsersService {
     );
   }
 
-  async update(id: string, user: CreateUserDto): Promise<UserDto> {
+  async findOneByEmail(email: string, projection = {}): Promise<User> {
+    return this.userModel.findOne({ email: email.toLowerCase() }, projection);
+  }
+
+  async update(id: string, user: UpdateUserDto): Promise<UserDto> {
     const userCheck = await this.findOneByUsername(user.username);
     if (userCheck && userCheck._id.toString() != id) {
       throw new ConflictException(

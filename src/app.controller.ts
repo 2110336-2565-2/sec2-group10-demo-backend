@@ -33,10 +33,10 @@ export class AppController {
     example: '001Admin',
   })
   @ApiQuery({
-    name: 'username',
+    name: 'email',
     type: 'string',
     required: true,
-    example: 'Admin001',
+    example: '123456@gmail.com',
   })
   @Post('auth/login')
   async login(@Request() req) {
