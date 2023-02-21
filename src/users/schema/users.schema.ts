@@ -1,4 +1,5 @@
 import { Document, SchemaTypes, Types } from 'mongoose';
+import { Role } from 'src/common/enums/role';
 
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
@@ -57,6 +58,62 @@ export class User {
     },
   })
   registrationDate: Date;
+
+  /**
+   * Account number of the user
+   * @example 000000000000000000000000
+   */
+  @ApiProperty({ example: '000000000000000000000000' })
+  @Prop({})
+  accountNumber: number;
+
+  /**
+   * Bank name of the user
+   * @example SCB
+   */
+  @ApiProperty({ example: 'SCB' })
+  @Prop({})
+  bankName: string;
+
+  /**
+   * credit card name
+   * @example Pol Wongnai
+   */
+  @ApiProperty({ example: 'Pol Wongnai' })
+  @Prop({})
+  creditCardName: string;
+
+  /**
+   * credit card number
+   * @example 0000000000000000
+   */
+  @ApiProperty({ example: '0000000000000000' })
+  @Prop({})
+  creditCardNumber: number;
+
+  /**
+   * credit card expire date
+   * @example 01/2021
+   **/
+  @ApiProperty({ example: '01/2021' })
+  @Prop({})
+  creditCardExpireDate: string;
+
+  /**
+   * credit card cvv
+   * @example 000
+   * */
+  @ApiProperty({ example: '000' })
+  @Prop({})
+  creditCardCVV: number;
+
+  /**
+   * role of the user
+   * @example user
+   * */
+  @ApiProperty({ example: 'user' })
+  @Prop({ default: 'user', enum: Role })
+  role: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
