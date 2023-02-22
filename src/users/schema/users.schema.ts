@@ -123,9 +123,9 @@ export class User {
    * role of the user
    * @example user
    */
-  @ApiProperty({ example: 'user' })
-  @Prop({ default: 'user', enum: Role })
-  role: string;
+  @ApiProperty({ example: ['user'] })
+  @Prop({ default: ['user'] })
+  roles: Role[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
