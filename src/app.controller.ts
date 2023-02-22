@@ -5,12 +5,14 @@ import { AppService } from './app.service';
 import { AuthService } from './auth/auth.service';
 import { LocalAuthGuard } from './auth/guards/local-auth.guard';
 import { Public } from './auth/public_decorator';
+import { UsersService } from './users/users.service';
 
 @Controller()
 export class AppController {
   constructor(
     private readonly appService: AppService,
     private authService: AuthService,
+    private userService: UsersService,
   ) {}
 
   @Get()
@@ -40,7 +42,15 @@ export class AppController {
   })
   @Post('auth/login')
   async login(@Request() req) {
-    return await this.authService.login(req.user);
+    const query_user = await this.userService.findOneByEmail(req.user.email);
+
+    const req_user = {
+      _id: query_user._id,
+      username: query_user.username,
+      email: query_user.email,
+      roles: query_user.roles,
+    };
+    return await this.authService.login(req_user);
   }
 
   /**
