@@ -64,7 +64,9 @@ export class User {
    * @example 000000000000000000000000
    */
   @ApiProperty({ example: '000000000000000000000000' })
-  @Prop({})
+  @Prop({
+    default: null,
+  })
   accountNumber: number;
 
   /**
@@ -72,7 +74,9 @@ export class User {
    * @example SCB
    */
   @ApiProperty({ example: 'SCB' })
-  @Prop({})
+  @Prop({
+    default: null,
+  })
   bankName: string;
 
   /**
@@ -80,7 +84,9 @@ export class User {
    * @example Pol Wongnai
    */
   @ApiProperty({ example: 'Pol Wongnai' })
-  @Prop({})
+  @Prop({
+    default: null,
+  })
   creditCardName: string;
 
   /**
@@ -88,7 +94,9 @@ export class User {
    * @example 0000000000000000
    */
   @ApiProperty({ example: '0000000000000000' })
-  @Prop({})
+  @Prop({
+    default: null,
+  })
   creditCardNumber: number;
 
   /**
@@ -96,21 +104,25 @@ export class User {
    * @example 01/2021
    **/
   @ApiProperty({ example: '01/2021' })
-  @Prop({})
+  @Prop({
+    default: null,
+  })
   creditCardExpireDate: string;
 
   /**
    * credit card cvv
    * @example 000
-   * */
+   */
   @ApiProperty({ example: '000' })
-  @Prop({})
+  @Prop({
+    default: null,
+  })
   creditCardCVV: number;
 
   /**
    * role of the user
    * @example user
-   * */
+   */
   @ApiProperty({ example: 'user' })
   @Prop({ default: 'user', enum: Role })
   role: string;
