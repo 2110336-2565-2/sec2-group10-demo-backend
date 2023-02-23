@@ -15,6 +15,7 @@ import {
   ApiBody,
   ApiConflictResponse,
   ApiCreatedResponse,
+  ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiParam,
@@ -38,16 +39,23 @@ export class UsersController {
     description: 'Return users',
     type: [User],
   })
+  @ApiForbiddenResponse({
+    description: 'Forbidden resource',
+  })
   @Get()
   @HttpCode(HttpStatus.OK)
   async getUsers(): Promise<CreateUserDto[]> {
     return this.usersService.findAll();
   }
 
+  @Roles(Role.Artist)
   @ApiParam({ name: 'id', type: String, required: true })
   @ApiOkResponse({
     description: 'Return user',
     type: UserDto,
+  })
+  @ApiForbiddenResponse({
+    description: 'Forbidden resource',
   })
   @ApiNotFoundResponse({
     description: 'User not found',
