@@ -1,4 +1,6 @@
 import { Response } from 'express';
+import { Role } from 'src/common/enums/role';
+import { Roles } from 'src/roles/roles.decorator';
 
 import { Controller, Param, Post } from '@nestjs/common';
 import { Body, HttpCode, Res } from '@nestjs/common/decorators';
@@ -13,6 +15,7 @@ import {
   ApiBody,
   ApiConflictResponse,
   ApiCreatedResponse,
+  ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiParam,
@@ -31,9 +34,13 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @Roles(Role.User)
   @ApiOkResponse({
     description: 'Return users',
     type: [User],
+  })
+  @ApiForbiddenResponse({
+    description: 'Forbidden resource',
   })
   @Get()
   @HttpCode(HttpStatus.OK)
@@ -41,10 +48,14 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
+  @Roles(Role.Artist)
   @ApiParam({ name: 'id', type: String, required: true })
   @ApiOkResponse({
     description: 'Return user',
     type: UserDto,
+  })
+  @ApiForbiddenResponse({
+    description: 'Forbidden resource',
   })
   @ApiNotFoundResponse({
     description: 'User not found',

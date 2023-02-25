@@ -9,6 +9,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { MusicsModule } from './music/musics.module';
+import { RolesGuard } from './roles/roles.guard';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -24,6 +25,13 @@ import { UsersModule } from './users/users.module';
     MusicsModule,
   ],
   controllers: [AppController],
-  providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],
+  providers: [
+    AppService,
+    { provide: APP_GUARD, useClass: JwtAuthGuard },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+  ],
 })
 export class AppModule {}

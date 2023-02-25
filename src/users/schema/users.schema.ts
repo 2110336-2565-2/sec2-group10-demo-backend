@@ -1,4 +1,5 @@
 import { Document, SchemaTypes, Types } from 'mongoose';
+import { Role } from 'src/common/enums/role';
 
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
@@ -57,6 +58,34 @@ export class User {
     },
   })
   registrationDate: Date;
+
+  /**
+   * Account number of the user
+   * @example 000000000000000000000000
+   */
+  @ApiProperty({ example: '0000000000' })
+  @Prop({
+    default: null,
+  })
+  accountNumber: number;
+
+  /**
+   * Bank name of the user
+   * @example SCB
+   */
+  @ApiProperty({ example: 'SCB' })
+  @Prop({
+    default: null,
+  })
+  bankName: string;
+
+  /**
+   * role of the user
+   * @example user
+   */
+  @ApiProperty({ example: ['user'] })
+  @Prop({ default: ['user'] })
+  roles: Role[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
