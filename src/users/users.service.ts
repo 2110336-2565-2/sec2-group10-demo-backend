@@ -1,6 +1,7 @@
 import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
 import * as mongoose from 'mongoose';
+import { Role } from 'src/common/enums/role';
 
 import { Injectable } from '@nestjs/common';
 import {
@@ -101,12 +102,13 @@ export class UsersService {
     }
   }
 
-  // async setRoleUser(email: string, role: Role): Promise<any> {
-  //   const user = await this.findOneByEmail(email);
-  //   if (user.roles.includes(role)) {
-  //     throw new ConflictException(`User already has ${role} role`);
-  //   }
-  //   user.roles.push(role);
-  //   return this.update(id, user);
-  // }
+  async setRoleUser(email: string, role: Role): Promise<any> {
+    const user = await this.findOneByEmail(email);
+
+    if (user.roles.includes(role)) {
+      throw new ConflictException(`User already has ${role} role`);
+    }
+    user.roles.push(role);
+    return await this.update(user._id.toString(), user);
+  }
 }

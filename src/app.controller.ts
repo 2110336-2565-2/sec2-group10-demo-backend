@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { AuthService } from './auth/auth.service';
 import { LocalAuthGuard } from './auth/guards/local-auth.guard';
 import { Public } from './auth/public_decorator';
+import { Role } from './common/enums/role';
 import { UsersService } from './users/users.service';
 
 @Controller()
@@ -65,5 +66,39 @@ export class AppController {
   @Get('profile')
   getProfile(@Request() req) {
     return req.user;
+  }
+
+  //set role artist
+  @ApiBearerAuth()
+  @Get('role/artist')
+  async upgradeToArtist(@Request() req) {
+    const new_role_user = await this.userService.setRoleUser(
+      req.user.email,
+      Role.Artist,
+    );
+    const req_user = {
+      _id: new_role_user._id,
+      username: new_role_user.username,
+      email: new_role_user.email,
+      roles: new_role_user.roles,
+    };
+    return await this.authService.login(req_user);
+  }
+
+  //set role premium
+  @ApiBearerAuth()
+  @Get('role/premium')
+  async upgradeToPremium(@Request() req) {
+    const new_role_user = await this.userService.setRoleUser(
+      req.user.email,
+      Role.Premium,
+    );
+    const req_user = {
+      _id: new_role_user._id,
+      username: new_role_user.username,
+      email: new_role_user.email,
+      roles: new_role_user.roles,
+    };
+    return await this.authService.login(req_user);
   }
 }

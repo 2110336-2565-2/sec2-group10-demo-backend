@@ -1,6 +1,4 @@
 import { Response } from 'express';
-import { Role } from 'src/common/enums/role';
-import { Roles } from 'src/roles/roles.decorator';
 
 import { Controller, Param, Post } from '@nestjs/common';
 import { Body, HttpCode, Res } from '@nestjs/common/decorators';
@@ -34,7 +32,6 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Roles(Role.User)
   @ApiOkResponse({
     description: 'Return users',
     type: [User],
@@ -48,7 +45,6 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  // @Roles(Role.Artist)
   @ApiParam({ name: 'id', type: String, required: true })
   @ApiOkResponse({
     description: 'Return user',
