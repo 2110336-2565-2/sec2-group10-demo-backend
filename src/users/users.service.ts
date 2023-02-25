@@ -102,13 +102,18 @@ export class UsersService {
     }
   }
 
-  async setRoleUser(email: string, role: Role): Promise<any> {
+  async setRoleUser(email: string, role: Role, update_data: any): Promise<any> {
     const user = await this.findOneByEmail(email);
 
     if (user.roles.includes(role)) {
       throw new ConflictException(`User already has ${role} role`);
     }
     user.roles.push(role);
+    if (role === Role.Artist) {
+      user.accountNumber = update_data.accountNumber;
+      user.bankName = update_data.bankName;
+    }
+
     return await this.update(user._id.toString(), user);
   }
 }
