@@ -48,11 +48,11 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @Roles(Role.Artist)
+  // @Roles(Role.Artist)
   @ApiParam({ name: 'id', type: String, required: true })
   @ApiOkResponse({
     description: 'Return user',
-    type: UserDto,
+    type: User,
   })
   @ApiForbiddenResponse({
     description: 'Forbidden resource',

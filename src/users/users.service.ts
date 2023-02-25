@@ -49,13 +49,10 @@ export class UsersService {
     return this.userModel.find();
   }
 
-  async findOneById(id: string, projection = {}): Promise<UserDto> {
+  async findOneById(id: string, projection = {}): Promise<User> {
     try {
       const user = await this.userModel.findById(id, projection);
-      const userDto = new UserDto();
-      userDto.username = user.username;
-      userDto.email = user.email;
-      return userDto;
+      return user;
     } catch (e) {
       throw new NotFoundException(`There isn't any user with id: ${id}`);
     }
@@ -103,4 +100,13 @@ export class UsersService {
       throw new NotFoundException(`There isn't any user with id: ${id}`);
     }
   }
+
+  // async setRoleUser(email: string, role: Role): Promise<any> {
+  //   const user = await this.findOneByEmail(email);
+  //   if (user.roles.includes(role)) {
+  //     throw new ConflictException(`User already has ${role} role`);
+  //   }
+  //   user.roles.push(role);
+  //   return this.update(id, user);
+  // }
 }
