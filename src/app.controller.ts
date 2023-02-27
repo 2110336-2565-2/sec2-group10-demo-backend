@@ -91,48 +91,30 @@ export class AppController {
   //set role artist
   @ApiBearerAuth()
   @ApiOkResponse({
-    description: 'Return access token',
+    description: 'Success to upgrade to artist',
   })
   @ApiConflictResponse({ description: 'User already has artist role' })
   @HttpCode(HttpStatus.OK)
   @HttpCode(HttpStatus.CONFLICT)
   @Put('role/artist')
   async upgradeToArtist(@Request() req, @Body() body: UpgradeToArtistDto) {
-    const new_role_user = await this.userService.setRoleUser(
-      req.user.email,
-      Role.Artist,
-      body,
-    );
-    const req_user = {
-      _id: new_role_user._id,
-      username: new_role_user.username,
-      email: new_role_user.email,
-      roles: new_role_user.roles,
-    };
-    return await this.authService.login(req_user);
+    await this.userService.setRoleUser(req.user.email, Role.Artist, body);
+
+    return { message: 'success to upgrade to artist', success: true };
   }
 
   //set role premium
   @ApiBearerAuth()
   @ApiOkResponse({
-    description: 'Return access token',
+    description: 'Success to upgrade to premium',
   })
   @ApiConflictResponse({ description: 'User already has premium role' })
   @HttpCode(HttpStatus.OK)
   @HttpCode(HttpStatus.CONFLICT)
   @Put('role/premium')
   async upgradeToPremium(@Request() req, @Body() body: UpgradeToPremiumDto) {
-    const new_role_user = await this.userService.setRoleUser(
-      req.user.email,
-      Role.Premium,
-      body,
-    );
-    const req_user = {
-      _id: new_role_user._id,
-      username: new_role_user.username,
-      email: new_role_user.email,
-      roles: new_role_user.roles,
-    };
-    return await this.authService.login(req_user);
+    await this.userService.setRoleUser(req.user.email, Role.Premium, body);
+
+    return { message: 'success to upgrade to premium', success: true };
   }
 }
