@@ -3,6 +3,8 @@ import { SchemaTypes, Types } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 
+import { Music } from './music.schema';
+
 export type PlaylistDocument = Playlist & Document;
 
 @Schema()
@@ -90,8 +92,10 @@ export class Playlist {
    */
   @ApiProperty({ example: ['5ff4c9d8e4b0f8b8b8b8b8b8'] })
   @Prop({
-    type: [SchemaTypes.ObjectId],
+    type: [{ type: String }],
     required: true,
+    ref: Music.name,
+    default: [],
   })
   musics: Types.ObjectId[];
 

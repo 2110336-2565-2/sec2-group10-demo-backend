@@ -11,7 +11,7 @@ import {
   Post,
   Req,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { JoiValidationPipe } from '../../utils/joiValidation.pipe';
 import { UtilsService } from '../../utils/utils.service';
@@ -20,6 +20,7 @@ import { EditPlaylistDto } from '../dto/edit-playlist.dto';
 import { PlaylistsService } from './playlists.service';
 
 @ApiBearerAuth()
+@ApiTags('users/playlists')
 @Controller('users/playlists')
 export class PlaylistsController {
   constructor(
@@ -82,7 +83,7 @@ export class PlaylistsController {
     id: string,
   ) {
     this.utilsService.validateMongoId(id);
-    return await this.playlistService.getPlaylist(new Types.ObjectId(id));
+    return await this.playlistService.getPlaylistInfo(new Types.ObjectId(id));
   }
 
   @Post()
@@ -166,6 +167,43 @@ export class PlaylistsController {
   ) {
     this.utilsService.validateMongoId(playlistId);
     return await this.playlistService.deletePlaylist(
+      new Types.ObjectId(playlistId),
+    );
+  }
+
+  @Get('/:id/musics')
+  @ApiResponse({
+    status: 200,
+    description: 'Return musics in the playlist',
+    schema: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          name: { type: 'string', example: 'My music' },
+          duration: { type: 'number', example: 200 },
+          coverImage: {
+            type: 'string',
+            example:
+              'https://w7.pngwing.com/pngs/802/825/png-transparent-redbubble-polite-cat-meme-funny-cat-meme.png',
+          },
+          albumId: {
+            type: 'string',
+            example: '5ff4c9d8e4b0f8b8b8b8b8b8',
+          },
+          albumName: { type: 'string', example: 'My album' },
+          ownerId: { type: 'string', example: '5ff4c9d8e4b0f8b8b8b8b8b8' },
+          ownerName: { type: 'string', example: 'My name' },
+        },
+      },
+    },
+  })
+  async getMusicsInPlaylist(
+    @Param('id', new JoiValidationPipe(Joi.string().required()))
+    playlistId: string,
+  ) {
+    this.utilsService.validateMongoId(playlistId);
+    return await this.playlistService.getMusicsInPlaylist(
       new Types.ObjectId(playlistId),
     );
   }
