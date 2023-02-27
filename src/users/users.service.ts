@@ -53,6 +53,10 @@ export class UsersService {
   async findOneById(id: string, projection = {}): Promise<User> {
     try {
       const user = await this.userModel.findById(id, projection);
+      if (!user) {
+        throw new NotFoundException(`There isn't any user with id: ${id}`);
+      }
+
       return user;
     } catch (e) {
       throw new NotFoundException(`There isn't any user with id: ${id}`);
