@@ -8,9 +8,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
-import { MusicsModule } from './music/musics.module';
 import { RolesGuard } from './roles/roles.guard';
 import { UsersModule } from './users/users.module';
+import { UtilsModule } from './utils/utils.module';
 
 @Module({
   imports: [
@@ -22,7 +22,7 @@ import { UsersModule } from './users/users.module';
     MongooseModule.forRoot(process.env.DATABASE_URI),
     AuthModule,
     UsersModule,
-    MusicsModule,
+    UtilsModule,
   ],
   controllers: [AppController],
   providers: [

@@ -7,7 +7,7 @@ import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { MusicsService } from './musics.service';
 
 @ApiBearerAuth()
-@Controller('musics')
+@Controller('users/musics')
 export class MusicsController {
   constructor(private readonly musicsService: MusicsService) {}
 

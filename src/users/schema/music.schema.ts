@@ -3,12 +3,10 @@ import { SchemaTypes, Types } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 
-export type PlaylistDocument = Playlist & Document;
-
 @Schema()
-export class Playlist {
+export class Music {
   /**
-   * ID of the playlist
+   * ID of the music
    * @example 5ff4c9d8e4b0f8b8b8b8b8b8
    */
   @ApiProperty({ example: '5ff4c9d8e4b0f8b8b8b8b8b8' })
@@ -20,15 +18,15 @@ export class Playlist {
   _id: Types.ObjectId;
 
   /**
-   * Name of the playlist
-   * @example My playlist
+   * Name of the music
+   * @example My music
    * @maxLength 50
    * @minLength 1
    * @pattern ^[a-zA-Z0-9 ]*$
    * @required
    * @type string
    */
-  @ApiProperty({ example: 'My playlist' })
+  @ApiProperty({ example: 'My music' })
   @Prop({
     required: true,
     maxlength: 50,
@@ -38,15 +36,15 @@ export class Playlist {
   name: string;
 
   /**
-   * Description of the playlist
-   * @example My playlist description
+   * Description of the music
+   * @example My music description
    * @maxLength 100
    * @minLength 1
    * @pattern ^[a-zA-Z0-9 ]*$
    * @default ''
    * @type string
    */
-  @ApiProperty({ example: 'My playlist description' })
+  @ApiProperty({ example: 'My music description' })
   @Prop({
     maxlength: 100,
     minlength: 1,
@@ -56,7 +54,7 @@ export class Playlist {
   description: string;
 
   /**
-   * Date of creation of the playlist
+   * Date of creation of the music
    * @example 2021-01-01T00:00:00.000Z
    * @type string
    * @format date-time
@@ -71,7 +69,7 @@ export class Playlist {
   creationDate: Date;
 
   /**
-   * ID of the user who created the playlist
+   * ID of the album of the music
    * @example 5ff4c9d8e4b0f8b8b8b8b8b8
    * @required
    * @type string
@@ -81,23 +79,10 @@ export class Playlist {
     type: SchemaTypes.ObjectId,
     required: true,
   })
-  userId: Types.ObjectId;
+  albumId: Types.ObjectId;
 
   /**
-   * ID of the songs in the playlist
-   * @example ['5ff4c9d8e4b0f8b8b8b8b8b8']
-   * @required
-   * @type [string]
-   */
-  @ApiProperty({ example: ['5ff4c9d8e4b0f8b8b8b8b8b8'] })
-  @Prop({
-    type: [SchemaTypes.ObjectId],
-    required: true,
-  })
-  musics: Types.ObjectId[];
-
-  /**
-   * Image of the playlist
+   * Image of the music
    * @example https://www.google.com
    * @required
    * @type string
@@ -106,19 +91,19 @@ export class Playlist {
   @Prop({
     required: true,
   })
-  image: string;
+  coverImage: string;
 
   /**
-   * Is album
-   * @example true
-   * @default false
-   * @type boolean
+   * URL of the music
+   * @example https://www.google.com
+   * @required
+   * @type string
    */
-  @ApiProperty({ example: 'true' })
+  @ApiProperty({ example: 'https://www.google.com' })
   @Prop({
-    default: false,
+    required: true,
   })
-  isAlbum: boolean;
+  url: string;
 }
 
-export const PlaylistSchema = SchemaFactory.createForClass(Playlist);
+export const MusicSchema = SchemaFactory.createForClass(Music);
