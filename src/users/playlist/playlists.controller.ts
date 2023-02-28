@@ -11,12 +11,19 @@ import {
   Post,
   Req,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { JoiValidationPipe } from '../../utils/joiValidation.pipe';
 import { UtilsService } from '../../utils/utils.service';
 import { CreatePlaylistDto } from '../dto/create-playlist.dto';
 import { EditPlaylistDto } from '../dto/edit-playlist.dto';
+import { MusicsInPlaylistResponseDto } from './dto/musics-in-playlist-response.dto';
+import {
+  CreatePlaylistResponseDto,
+  DeletePlaylistResponseDto,
+  GetPlaylistInfoResponseDto,
+  UpdatePlaylistInfoResponseDto,
+} from './dto/playlist-response.dto';
 import { PlaylistsService } from './playlists.service';
 
 @ApiBearerAuth()
@@ -28,60 +35,32 @@ export class PlaylistsController {
     private readonly utilsService: UtilsService,
   ) {}
 
-  @Get('/all')
+  @Get('all')
   @ApiResponse({
     status: 200,
     description: 'Return playlists',
-    schema: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          name: { type: 'string', example: 'My playlist' },
-          description: { type: 'string', example: 'My playlist description' },
-          musics: {
-            type: 'array',
-            example: ['5ff4c9d8e4b0f8b8b8b8b8b8'],
-          },
-          coverImage: {
-            type: 'string',
-            example:
-              'https://w7.pngwing.com/pngs/802/825/png-transparent-redbubble-polite-cat-meme-funny-cat-meme.png',
-          },
-        },
-      },
-    },
+    type: [GetPlaylistInfoResponseDto],
   })
-  async getPlaylists(@Req() req) {
+  async getPlaylists(@Req() req): Promise<GetPlaylistInfoResponseDto[]> {
     this.utilsService.validateMongoId(req.user.userId);
     return await this.playlistService.getPlaylists(req.user.userId);
   }
 
-  @Get('/:id')
+  @Get(':id')
+  @ApiParam({
+    name: 'id',
+    description: 'Playlist id',
+    type: String,
+  })
   @ApiResponse({
     status: 200,
     description: 'Return playlist information',
-    schema: {
-      type: 'object',
-      properties: {
-        name: { type: 'string', example: 'My playlist' },
-        description: { type: 'string', example: 'My playlist description' },
-        musics: {
-          type: 'array',
-          example: ['5ff4c9d8e4b0f8b8b8b8b8b8'],
-        },
-        coverImage: {
-          type: 'string',
-          example:
-            'https://w7.pngwing.com/pngs/802/825/png-transparent-redbubble-polite-cat-meme-funny-cat-meme.png',
-        },
-      },
-    },
+    type: GetPlaylistInfoResponseDto,
   })
   async getPlaylist(
     @Param('id', new JoiValidationPipe(Joi.string().required()))
     id: string,
-  ) {
+  ): Promise<GetPlaylistInfoResponseDto> {
     this.utilsService.validateMongoId(id);
     return await this.playlistService.getPlaylistInfo(new Types.ObjectId(id));
   }
@@ -90,49 +69,28 @@ export class PlaylistsController {
   @ApiResponse({
     status: 201,
     description: 'Return created playlist',
-    schema: {
-      type: 'object',
-      properties: {
-        name: { type: 'string', example: 'My playlist' },
-        description: { type: 'string', example: 'My playlist description' },
-        musics: {
-          type: 'array',
-          example: ['5ff4c9d8e4b0f8b8b8b8b8b8'],
-        },
-        coverImage: {
-          type: 'string',
-          example:
-            'https://w7.pngwing.com/pngs/802/825/png-transparent-redbubble-polite-cat-meme-funny-cat-meme.png',
-        },
-      },
-    },
+    type: CreatePlaylistResponseDto,
   })
   async createPlaylist(@Req() req, @Body() body: CreatePlaylistDto) {
     return await this.playlistService.createPlaylist(req.user.userId, body);
   }
 
-  @Patch('/:id')
+  @Patch(':id')
+  @ApiParam({
+    name: 'id',
+    description: 'Playlist id',
+    type: String,
+  })
   @ApiResponse({
     status: 200,
     description: 'Return updated playlist',
-    schema: {
-      type: 'object',
-      properties: {
-        name: { type: 'string', example: 'My playlist' },
-        description: { type: 'string', example: 'My playlist description' },
-        coverImage: {
-          type: 'string',
-          example:
-            'https://w7.pngwing.com/pngs/802/825/png-transparent-redbubble-polite-cat-meme-funny-cat-meme.png',
-        },
-      },
-    },
+    type: UpdatePlaylistInfoResponseDto,
   })
   async updatePlaylist(
     @Param('id', new JoiValidationPipe(Joi.string().required()))
     playlistId: string,
     @Body() body: EditPlaylistDto,
-  ) {
+  ): Promise<UpdatePlaylistInfoResponseDto> {
     this.utilsService.validateMongoId(playlistId);
     return await this.playlistService.updatePlaylist(
       new Types.ObjectId(playlistId),
@@ -140,26 +98,16 @@ export class PlaylistsController {
     );
   }
 
-  @Delete('/:id')
+  @Delete(':id')
+  @ApiParam({
+    name: 'id',
+    description: 'Playlist id',
+    type: String,
+  })
   @ApiResponse({
     status: 200,
     description: 'Return deleted playlist',
-    schema: {
-      type: 'object',
-      properties: {
-        name: { type: 'string', example: 'My playlist' },
-        description: { type: 'string', example: 'My playlist description' },
-        musics: {
-          type: 'array',
-          example: ['5ff4c9d8e4b0f8b8b8b8b8b8'],
-        },
-        coverImage: {
-          type: 'string',
-          example:
-            'https://w7.pngwing.com/pngs/802/825/png-transparent-redbubble-polite-cat-meme-funny-cat-meme.png',
-        },
-      },
-    },
+    type: DeletePlaylistResponseDto,
   })
   async deletePlaylist(
     @Param('id', new JoiValidationPipe(Joi.string().required()))
@@ -171,37 +119,21 @@ export class PlaylistsController {
     );
   }
 
-  @Get('/:id/musics')
+  @Get(':id/musics')
+  @ApiParam({
+    name: 'id',
+    description: 'Playlist id',
+    type: String,
+  })
   @ApiResponse({
     status: 200,
     description: 'Return musics in the playlist',
-    schema: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          name: { type: 'string', example: 'My music' },
-          duration: { type: 'number', example: 200 },
-          coverImage: {
-            type: 'string',
-            example:
-              'https://w7.pngwing.com/pngs/802/825/png-transparent-redbubble-polite-cat-meme-funny-cat-meme.png',
-          },
-          albumId: {
-            type: 'string',
-            example: '5ff4c9d8e4b0f8b8b8b8b8b8',
-          },
-          albumName: { type: 'string', example: 'My album' },
-          ownerId: { type: 'string', example: '5ff4c9d8e4b0f8b8b8b8b8b8' },
-          ownerName: { type: 'string', example: 'My name' },
-        },
-      },
-    },
+    type: [MusicsInPlaylistResponseDto],
   })
   async getMusicsInPlaylist(
     @Param('id', new JoiValidationPipe(Joi.string().required()))
     playlistId: string,
-  ) {
+  ): Promise<MusicsInPlaylistResponseDto[]> {
     this.utilsService.validateMongoId(playlistId);
     return await this.playlistService.getMusicsInPlaylist(
       new Types.ObjectId(playlistId),
