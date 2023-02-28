@@ -46,71 +46,22 @@ export class PlaylistsService {
     return playlist;
   }
 
-  async getMusicsInPlaylist(
-    playlistId: Types.ObjectId,
-  ): Promise<MusicsInPlaylistResponseDto[]> {
-    const playlist = await this.playlistModel
-      .findById(playlistId, {
-        name: 1,
-        description: 1,
-        musics: 1,
-        coverImage: 1,
-      })
-      .populate({
-        path: 'musics',
-        populate: [
-          {
-            path: 'albumId',
-            select: {
-              name: 1,
-            },
-          },
-          {
-            path: 'ownerId',
-            select: {
-              username: 1,
-            },
-          },
-        ],
-        select: {
-          name: 1,
-          duration: 1,
-          coverImage: 1,
-          albumId: 1,
-          ownerId: 1,
-        },
-      });
-
-    if (!playlist) {
-      throw new NotFoundException(
-        `There isn't any playlist with id: ${playlistId}`,
-      );
-    }
-
-    const musics: MusicsInPlaylistResponseDto[] = [];
-    for (let music of playlist.musics as any) {
-      musics.push({
-        musicId: music._id,
-        name: music.name,
-        duration: music.duration ? music.duration : '',
-        coverImage: music.coverImage ? music.coverImage : '',
-        albumId: music.albumId._id ? music.albumId._id : '',
-        albumName: music.albumId.name ? music.albumId.name : '',
-        ownerId: music.ownerId._id ? music.ownerId._id : '',
-        ownerName: music.ownerId.username ? music.ownerId.username : '',
-      });
-    }
-
-    return musics;
-  }
-
-  async getPlaylists(
+  async getPlaylistsInfo(
     userId: Types.ObjectId,
+    isAlbum: boolean,
   ): Promise<GetPlaylistInfoResponseDto[]> {
-    const playlists = await this.playlistModel.find(
-      { userId: userId },
-      { name: 1, description: 1, coverImage: 1 },
-    );
+    // Initialize filter
+    const filter = { userId: userId };
+    if (isAlbum) {
+      filter['isAlbum'] = true;
+    }
+
+    // Get playlists
+    const playlists = await this.playlistModel.find(filter, {
+      name: 1,
+      description: 1,
+      coverImage: 1,
+    });
 
     const res: GetPlaylistInfoResponseDto[] = [];
     for (let playlist of playlists) {
@@ -199,5 +150,63 @@ export class PlaylistsService {
     };
 
     return playlist;
+  }
+
+  async getMusicsInPlaylist(
+    playlistId: Types.ObjectId,
+  ): Promise<MusicsInPlaylistResponseDto[]> {
+    const playlist = await this.playlistModel
+      .findById(playlistId, {
+        name: 1,
+        description: 1,
+        musics: 1,
+        coverImage: 1,
+      })
+      .populate({
+        path: 'musics',
+        populate: [
+          {
+            path: 'albumId',
+            select: {
+              name: 1,
+            },
+          },
+          {
+            path: 'ownerId',
+            select: {
+              username: 1,
+            },
+          },
+        ],
+        select: {
+          name: 1,
+          duration: 1,
+          coverImage: 1,
+          albumId: 1,
+          ownerId: 1,
+        },
+      });
+
+    if (!playlist) {
+      throw new NotFoundException(
+        `There isn't any playlist with id: ${playlistId}`,
+      );
+    }
+
+    const musics: MusicsInPlaylistResponseDto[] = [];
+    for (let music of playlist.musics as any) {
+      musics.push({
+        musicId: music._id,
+        name: music.name,
+        duration: music.duration ? music.duration : '',
+        coverImage: music.coverImage ? music.coverImage : '',
+        albumId: music.albumId._id ? music.albumId._id : '',
+        albumName: music.albumId.name ? music.albumId.name : '',
+        ownerId: music.ownerId._id ? music.ownerId._id : '',
+        ownerName: music.ownerId.username ? music.ownerId.username : '',
+      });
+    }
+
+    return musics;
   }
 }

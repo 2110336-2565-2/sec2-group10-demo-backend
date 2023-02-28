@@ -9,9 +9,16 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import { JoiValidationPipe } from '../../utils/joiValidation.pipe';
 import { UtilsService } from '../../utils/utils.service';
@@ -36,14 +43,25 @@ export class PlaylistsController {
   ) {}
 
   @Get('all')
+  @ApiQuery({
+    name: 'isAlbum',
+    description: 'If true, return only albums',
+    type: Boolean,
+  })
   @ApiResponse({
     status: 200,
     description: 'Return playlists',
     type: [GetPlaylistInfoResponseDto],
   })
-  async getPlaylists(@Req() req): Promise<GetPlaylistInfoResponseDto[]> {
+  async getPlaylists(
+    @Req() req,
+    @Query('isAlbum') isAlbum: boolean = false,
+  ): Promise<GetPlaylistInfoResponseDto[]> {
     this.utilsService.validateMongoId(req.user.userId);
-    return await this.playlistService.getPlaylists(req.user.userId);
+    return await this.playlistService.getPlaylistsInfo(
+      req.user.userId,
+      isAlbum,
+    );
   }
 
   @Get(':id')
