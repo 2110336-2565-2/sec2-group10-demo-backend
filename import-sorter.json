@@ -5,6 +5,7 @@
   "importStringConfiguration.maximumNumberOfImportExpressionsPerLine.count": 80,
   "importStringConfiguration.tabSize": 2,
   "importStringConfiguration.quoteMark": "double",
+  "importSorter.generalConfiguration.exclude": ["main.ts"],
   "importSorter.sortConfiguration.removeUnusedImports": true,
   "importSorter.sortConfiguration.removeUnusedDefaultImports": true,
   "importSorter.sortConfiguration.joinImportPaths": false
