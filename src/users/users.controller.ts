@@ -65,7 +65,7 @@ export class UsersController {
   @ApiNotFoundResponse({
     description: 'User not found',
   })
-  @Get(':id')
+  @Get('user/:id')
   @HttpCode(HttpStatus.OK)
   @HttpCode(HttpStatus.NOT_FOUND)
   async getUser(@Param() params) {
@@ -183,5 +183,21 @@ export class UsersController {
     await this.usersService.setRoleUser(req.user.email, Role.Premium, body);
 
     return { message: 'success to upgrade to premium', success: true };
+  }
+
+  //mock get profile
+
+  @ApiOkResponse({
+    description: 'Return user profile',
+  })
+  @Get('profile')
+  @HttpCode(HttpStatus.OK)
+  async getUserProfile(@Req() req) {
+    const user = await this.usersService.findOneByEmail(req.user.email);
+    return {
+      followers: user.followers,
+      following: user.following,
+      playlistsNumber: 999,
+    };
   }
 }
