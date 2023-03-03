@@ -25,7 +25,10 @@ import { JoiValidationPipe } from '../../utils/joiValidation.pipe';
 import { UtilsService } from '../../utils/utils.service';
 import { CreatePlaylistDto } from '../dto/create-playlist.dto';
 import { EditPlaylistDto } from '../dto/edit-playlist.dto';
-import { AddMusicToPlaylistBodyDto } from './dto/add-musics-to-playlist.dto';
+import {
+  AddMusicToPlaylistBodyDto,
+  AddMusicToPlaylistResponseDto,
+} from './dto/add-musics-to-playlist.dto';
 import { MusicsInPlaylistResponseDto } from './dto/musics-in-playlist-response.dto';
 import {
   CreatePlaylistResponseDto,
@@ -169,7 +172,7 @@ export class PlaylistsController {
   @ApiResponse({
     status: 201,
     description: 'Return playlist with added music',
-    type: UpdatePlaylistInfoResponseDto,
+    type: AddMusicToPlaylistResponseDto,
   })
   @ApiBody({
     description: 'Music ids',
