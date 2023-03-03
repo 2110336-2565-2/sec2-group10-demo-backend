@@ -28,8 +28,9 @@ import { EditPlaylistDto } from '../dto/edit-playlist.dto';
 import {
   AddMusicToPlaylistBodyDto,
   AddMusicToPlaylistResponseDto,
-} from './dto/add-musics-to-playlist.dto';
-import { MusicsInPlaylistResponseDto } from './dto/musics-in-playlist-response.dto';
+  MusicsInPlaylistResponseDto,
+  RemoveMusicFromPlaylistResponseDto,
+} from './dto/musics-in-playlist-response.dto';
 import {
   CreatePlaylistResponseDto,
   DeletePlaylistResponseDto,
@@ -192,6 +193,41 @@ export class PlaylistsController {
       formatIds.push(new Types.ObjectId(musicId));
     }
     return await this.playlistService.addMusicToPlaylist(
+      req.user.userId,
+      new Types.ObjectId(playlistId),
+      formatIds,
+    );
+  }
+
+  @Delete(':id/musics')
+  @ApiParam({
+    name: 'id',
+    description: 'Playlist id',
+    type: String,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Return playlist with removed music',
+    type: RemoveMusicFromPlaylistResponseDto,
+  })
+  @ApiBody({
+    description: 'Music ids',
+    type: RemoveMusicFromPlaylistResponseDto,
+  })
+  async removeMusicFromPlaylist(
+    @Req() req,
+    @Param('id', new JoiValidationPipe(Joi.string().required()))
+    playlistId: string,
+    @Body('musicIds')
+    musicIds: string[],
+  ): Promise<UpdatePlaylistInfoResponseDto> {
+    this.utilsService.validateMongoId([...musicIds, playlistId]);
+
+    let formatIds: Types.ObjectId[] = [];
+    for (let musicId of musicIds) {
+      formatIds.push(new Types.ObjectId(musicId));
+    }
+    return await this.playlistService.removeMusicFromPlaylist(
       req.user.userId,
       new Types.ObjectId(playlistId),
       formatIds,
