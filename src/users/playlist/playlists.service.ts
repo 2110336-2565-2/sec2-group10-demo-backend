@@ -23,12 +23,15 @@ export class PlaylistsService {
   async getPlaylistInfo(
     playlistId: Types.ObjectId,
   ): Promise<GetPlaylistInfoResponseDto> {
-    const playlist = await this.playlistModel.findById(playlistId, {
-      _id: 1,
-      name: 1,
-      description: 1,
-      coverImage: 1,
-    });
+    const playlist = await this.playlistModel
+      .findById(playlistId, {
+        _id: 1,
+        name: 1,
+        description: 1,
+        coverImage: 1,
+        userId: 1,
+      })
+      .populate('userId', { username: 1 });
 
     if (!playlist) {
       throw new NotFoundException(
@@ -41,9 +44,13 @@ export class PlaylistsService {
       name: playlist.name,
       description: playlist.description,
       coverImage: playlist.coverImage,
+      creatorName: (playlist.userId as any).username
+        ? (playlist.userId as any).username
+        : '',
+      creatorId: playlist.userId._id,
     };
 
-    return playlist;
+    return res;
   }
 
   async getPlaylistsInfo(
@@ -57,11 +64,14 @@ export class PlaylistsService {
     }
 
     // Get playlists
-    const playlists = await this.playlistModel.find(filter, {
-      name: 1,
-      description: 1,
-      coverImage: 1,
-    });
+    const playlists = await this.playlistModel
+      .find(filter, {
+        name: 1,
+        description: 1,
+        coverImage: 1,
+        userId: 1,
+      })
+      .populate('userId', { username: 1 });
 
     const res: GetPlaylistInfoResponseDto[] = [];
     for (let playlist of playlists) {
@@ -70,9 +80,13 @@ export class PlaylistsService {
         name: playlist.name,
         description: playlist.description,
         coverImage: playlist.coverImage,
+        creatorName: (playlist.userId as any).username
+          ? (playlist.userId as any).username
+          : '',
+        creatorId: playlist.userId._id,
       });
     }
-    return playlists;
+    return res;
   }
 
   async createPlaylist(
