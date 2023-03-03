@@ -3,7 +3,7 @@ import { Role } from 'src/common/enums/role';
 import { Roles } from 'src/roles/roles.decorator';
 
 import { Controller, Param, Post } from '@nestjs/common';
-import { Body, HttpCode, Res } from '@nestjs/common/decorators';
+import { Body, HttpCode, Req, Res } from '@nestjs/common/decorators';
 import {
   Delete,
   Get,
@@ -164,7 +164,7 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   @HttpCode(HttpStatus.CONFLICT)
   @Put('role/artist')
-  async upgradeToArtist(@Res() req, @Body() body: UpgradeToArtistDto) {
+  async upgradeToArtist(@Req() req, @Body() body: UpgradeToArtistDto) {
     await this.usersService.setRoleUser(req.user.email, Role.Artist, body);
 
     return { message: 'success to upgrade to artist', success: true };
