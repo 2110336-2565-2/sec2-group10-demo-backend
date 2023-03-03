@@ -89,19 +89,19 @@ export class User {
 
   /**
    * followers of the user
-   * @example 0
+   * @example ['sern@gmail.com']
    */
-  @ApiProperty({ example: 0 })
-  @Prop({ default: 0 })
-  followers: number;
+  @ApiProperty({ example: ['sern@gmail.com'] })
+  @Prop({ default: [] })
+  followers: string[];
 
   /**
    * following of the user
-   * @example 0
+   * @example ['sern@gmail.com']
    */
-  @ApiProperty({ example: 0 })
-  @Prop({ default: 0 })
-  following: number;
+  @ApiProperty({ example: ['sern@gmail.com'] })
+  @Prop({ default: [] })
+  following: string[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
