@@ -86,6 +86,22 @@ export class User {
   @ApiProperty({ example: ['user'] })
   @Prop({ default: ['user'] })
   roles: Role[];
+
+  /**
+   * followers of the user
+   * @example 0
+   */
+  @ApiProperty({ example: 0 })
+  @Prop({ default: 0 })
+  followers: number;
+
+  /**
+   * following of the user
+   * @example 0
+   */
+  @ApiProperty({ example: 0 })
+  @Prop({ default: 0 })
+  following: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
