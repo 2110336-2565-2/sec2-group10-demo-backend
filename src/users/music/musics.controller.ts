@@ -2,8 +2,10 @@ import { JoiValidationPipe } from 'src/utils/joiValidation.pipe';
 
 import * as Joi from '@hapi/joi';
 import { Controller, Get, Param } from '@nestjs/common';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+import { Public } from '../../auth/public_decorator';
+import { GetMusicsResponseDto } from './dto/get-musics-response.dto';
 import { MusicsService } from './musics.service';
 
 @ApiBearerAuth()
@@ -39,5 +41,24 @@ export class MusicsController {
     id: string,
   ) {
     return await this.musicsService.getMusic(id);
+  }
+
+  @Public()
+  @Get('/sample/:numberOfMusic')
+  @ApiResponse({
+    status: 200,
+    description: 'Return sample musics',
+    type: [GetMusicsResponseDto],
+  })
+  @ApiParam({
+    name: 'numberOfMusic',
+    description: 'Number of musics to return',
+    type: Number,
+  })
+  async getSampleMusics(
+    @Param('numberOfMusic', new JoiValidationPipe(Joi.number().required()))
+    numberOfMusic: string,
+  ): Promise<GetMusicsResponseDto[]> {
+    return await this.musicsService.getSampleMusics(parseInt(numberOfMusic));
   }
 }
