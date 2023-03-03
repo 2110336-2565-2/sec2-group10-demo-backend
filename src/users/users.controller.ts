@@ -195,8 +195,8 @@ export class UsersController {
   async getUserProfile(@Req() req) {
     const user = await this.usersService.findOneByEmail(req.user.email);
     return {
-      followers: user.followers,
-      following: user.following,
+      followersNumber: user.followers.length,
+      followingNumber: user.following.length,
       playlistsNumber: 999,
     };
   }
