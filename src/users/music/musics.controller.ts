@@ -22,7 +22,8 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiConsumes,
-  ApiResponse
+  ApiResponse,
+  ApiTags
 } from "@nestjs/swagger";
 
 import { UploadMusicDto } from "../dto/upload-music.dto";
@@ -30,6 +31,7 @@ import { Music } from "../schema/music.schema";
 import { MusicsService } from "./musics.service";
 
 @ApiBearerAuth()
+@ApiTags('users/musics')
 @Controller('users/musics')
 export class MusicsController {
   constructor(private readonly musicsService: MusicsService) {}
