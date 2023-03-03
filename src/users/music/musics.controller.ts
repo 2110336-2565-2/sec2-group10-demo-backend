@@ -2,11 +2,12 @@ import { JoiValidationPipe } from 'src/utils/joiValidation.pipe';
 
 import * as Joi from '@hapi/joi';
 import { Controller, Get, Param } from '@nestjs/common';
-import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { MusicsService } from './musics.service';
 
 @ApiBearerAuth()
+@ApiTags('users/musics')
 @Controller('users/musics')
 export class MusicsController {
   constructor(private readonly musicsService: MusicsService) {}
