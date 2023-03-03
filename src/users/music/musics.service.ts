@@ -68,16 +68,18 @@ export class MusicsService {
 
   async getMusicDuration(url: string) {
     return '00:02:00';
+
     // const stream = fs.createReadStream(
-    //   'https://storage.googleapis.com/demo-tuder-music/Shave%20of%20You.mp3',
+    //   new URL(
+    //     'https://storage.googleapis.com/demo-tuder-music/Shave%20of%20You.mp3',
+    //   ),
     // );
     // const duration = await getAudioDurationInSeconds(stream);
     // return duration;
 
     // const mp3file =
     //   'https://raw.githubusercontent.com/prof3ssorSt3v3/media-sample-files/master/doorbell.mp3';
-    // const audioContext = new (window.AudioContext ||
-    //   window.AudioContext)();
+    // const audioContext = new window.AudioContext();
     // const request = new XMLHttpRequest();
     // request.open('GET', mp3file, true);
     // request.responseType = 'arraybuffer';
@@ -85,7 +87,7 @@ export class MusicsService {
     //   audioContext.decodeAudioData(request.response, function (buffer) {
     //     let duration = buffer.duration;
     //     console.log(duration);
-    //     document.write(duration);
+    //     //document.write(duration);
     //   });
     // };
     // request.send();
