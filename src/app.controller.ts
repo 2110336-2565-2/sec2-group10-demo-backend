@@ -1,31 +1,11 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Post,
-  Put,
-  Request,
-  UseGuards,
-} from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiConflictResponse,
-  ApiOkResponse,
-  ApiQuery,
-  ApiResponse,
-} from '@nestjs/swagger';
+import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiQuery, ApiResponse } from '@nestjs/swagger';
 
 import { AppService } from './app.service';
 import { AuthService } from './auth/auth.service';
 import { LocalAuthGuard } from './auth/guards/local-auth.guard';
 import { Public } from './auth/public_decorator';
-import { Role } from './common/enums/role';
-import {
-  UpgradeToArtistDto,
-  UpgradeToPremiumDto,
-} from './users/dto/create-user.dto';
+
 import { UsersService } from './users/users.service';
 
 @Controller()
@@ -86,35 +66,5 @@ export class AppController {
   @Get('profile')
   getProfile(@Request() req) {
     return req.user;
-  }
-
-  //set role artist
-  @ApiBearerAuth()
-  @ApiOkResponse({
-    description: 'Success to upgrade to artist',
-  })
-  @ApiConflictResponse({ description: 'User already has artist role' })
-  @HttpCode(HttpStatus.OK)
-  @HttpCode(HttpStatus.CONFLICT)
-  @Put('role/artist')
-  async upgradeToArtist(@Request() req, @Body() body: UpgradeToArtistDto) {
-    await this.userService.setRoleUser(req.user.email, Role.Artist, body);
-
-    return { message: 'success to upgrade to artist', success: true };
-  }
-
-  //set role premium
-  @ApiBearerAuth()
-  @ApiOkResponse({
-    description: 'Success to upgrade to premium',
-  })
-  @ApiConflictResponse({ description: 'User already has premium role' })
-  @HttpCode(HttpStatus.OK)
-  @HttpCode(HttpStatus.CONFLICT)
-  @Put('role/premium')
-  async upgradeToPremium(@Request() req, @Body() body: UpgradeToPremiumDto) {
-    await this.userService.setRoleUser(req.user.email, Role.Premium, body);
-
-    return { message: 'success to upgrade to premium', success: true };
   }
 }

@@ -23,7 +23,12 @@ import {
 } from '@nestjs/swagger';
 
 import { Public } from '../auth/public_decorator';
-import { CreateUserDto, UpdateUserDto } from './dto/create-user.dto';
+import {
+  CreateUserDto,
+  UpdateUserDto,
+  UpgradeToArtistDto,
+  UpgradeToPremiumDto,
+} from './dto/create-user.dto';
 import { UserDto } from './dto/user.dto';
 import { User } from './schema/users.schema';
 import { UsersService } from './users.service';
@@ -148,5 +153,35 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   async findByEmail(@Param() params) {
     return this.usersService.findOneByEmail(params.email);
+  }
+
+  //set role artist
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'Success to upgrade to artist',
+  })
+  @ApiConflictResponse({ description: 'User already has artist role' })
+  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.CONFLICT)
+  @Put('role/artist')
+  async upgradeToArtist(@Res() req, @Body() body: UpgradeToArtistDto) {
+    await this.usersService.setRoleUser(req.user.email, Role.Artist, body);
+
+    return { message: 'success to upgrade to artist', success: true };
+  }
+
+  //set role premium
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'Success to upgrade to premium',
+  })
+  @ApiConflictResponse({ description: 'User already has premium role' })
+  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.CONFLICT)
+  @Put('role/premium')
+  async upgradeToPremium(@Res() req, @Body() body: UpgradeToPremiumDto) {
+    await this.usersService.setRoleUser(req.user.email, Role.Premium, body);
+
+    return { message: 'success to upgrade to premium', success: true };
   }
 }
