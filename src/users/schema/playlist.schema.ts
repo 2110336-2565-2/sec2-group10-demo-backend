@@ -4,6 +4,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 
 import { Music } from './music.schema';
+import { User } from './users.schema';
 
 export type PlaylistDocument = Playlist & Document;
 
@@ -81,6 +82,7 @@ export class Playlist {
   @Prop({
     type: SchemaTypes.ObjectId,
     required: true,
+    ref: User.name,
   })
   userId: Types.ObjectId;
 
