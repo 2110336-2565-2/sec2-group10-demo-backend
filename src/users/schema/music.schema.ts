@@ -3,6 +3,8 @@ import { SchemaTypes, Types } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 
+export type MusicDocument = Music & Document;
+
 @Schema()
 export class Music {
   /**
