@@ -57,6 +57,7 @@ export class MusicsService {
           albumName: { $arrayElemAt: ['$album.name', 0] },
           ownerName: { $arrayElemAt: ['$owner.username', 0] },
           duration: 1,
+          url: 1,
         },
       },
     ]);
@@ -72,6 +73,7 @@ export class MusicsService {
         albumName: music.albumName,
         ownerName: music.ownerName,
         duration: music.duration,
+        url: music.url,
       });
     }
 
