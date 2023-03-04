@@ -14,6 +14,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiParam,
   ApiQuery,
   ApiResponse,
@@ -24,7 +25,12 @@ import { JoiValidationPipe } from '../../utils/joiValidation.pipe';
 import { UtilsService } from '../../utils/utils.service';
 import { CreatePlaylistDto } from '../dto/create-playlist.dto';
 import { EditPlaylistDto } from '../dto/edit-playlist.dto';
-import { MusicsInPlaylistResponseDto } from './dto/musics-in-playlist-response.dto';
+import {
+  AddMusicToPlaylistBodyDto,
+  AddMusicToPlaylistResponseDto,
+  MusicsInPlaylistResponseDto,
+  RemoveMusicFromPlaylistResponseDto,
+} from './dto/musics-in-playlist-response.dto';
 import {
   CreatePlaylistResponseDto,
   DeletePlaylistResponseDto,
@@ -155,6 +161,76 @@ export class PlaylistsController {
     this.utilsService.validateMongoId(playlistId);
     return await this.playlistService.getMusicsInPlaylist(
       new Types.ObjectId(playlistId),
+    );
+  }
+
+  @Post(':id/musics')
+  @ApiParam({
+    name: 'id',
+    description: 'Playlist id',
+    type: String,
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Return playlist with added music',
+    type: AddMusicToPlaylistResponseDto,
+  })
+  @ApiBody({
+    description: 'Music ids',
+    type: AddMusicToPlaylistBodyDto,
+  })
+  async addMusicToPlaylist(
+    @Req() req,
+    @Param('id', new JoiValidationPipe(Joi.string().required()))
+    playlistId: string,
+    @Body('musicIds')
+    musicIds: string[],
+  ): Promise<UpdatePlaylistInfoResponseDto> {
+    this.utilsService.validateMongoId([...musicIds, playlistId]);
+
+    let formatIds: Types.ObjectId[] = [];
+    for (let musicId of musicIds) {
+      formatIds.push(new Types.ObjectId(musicId));
+    }
+    return await this.playlistService.addMusicToPlaylist(
+      req.user.userId,
+      new Types.ObjectId(playlistId),
+      formatIds,
+    );
+  }
+
+  @Delete(':id/musics')
+  @ApiParam({
+    name: 'id',
+    description: 'Playlist id',
+    type: String,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Return playlist with removed music',
+    type: RemoveMusicFromPlaylistResponseDto,
+  })
+  @ApiBody({
+    description: 'Music ids',
+    type: RemoveMusicFromPlaylistResponseDto,
+  })
+  async removeMusicFromPlaylist(
+    @Req() req,
+    @Param('id', new JoiValidationPipe(Joi.string().required()))
+    playlistId: string,
+    @Body('musicIds')
+    musicIds: string[],
+  ): Promise<UpdatePlaylistInfoResponseDto> {
+    this.utilsService.validateMongoId([...musicIds, playlistId]);
+
+    let formatIds: Types.ObjectId[] = [];
+    for (let musicId of musicIds) {
+      formatIds.push(new Types.ObjectId(musicId));
+    }
+    return await this.playlistService.removeMusicFromPlaylist(
+      req.user.userId,
+      new Types.ObjectId(playlistId),
+      formatIds,
     );
   }
 }

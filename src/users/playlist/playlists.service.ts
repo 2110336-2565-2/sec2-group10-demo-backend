@@ -1,12 +1,20 @@
 import { Model, Types } from 'mongoose';
 
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
 import { CreatePlaylistDto } from '../dto/create-playlist.dto';
 import { EditPlaylistDto } from '../dto/edit-playlist.dto';
 import { Playlist, PlaylistDocument } from '../schema/playlist.schema';
-import { MusicsInPlaylistResponseDto } from './dto/musics-in-playlist-response.dto';
+import {
+  AddMusicToPlaylistResponseDto,
+  MusicsInPlaylistResponseDto,
+  RemoveMusicFromPlaylistResponseDto,
+} from './dto/musics-in-playlist-response.dto';
 import {
   CreatePlaylistResponseDto,
   DeletePlaylistResponseDto,
@@ -44,9 +52,10 @@ export class PlaylistsService {
       name: playlist.name,
       description: playlist.description,
       coverImage: playlist.coverImage,
-      creatorName: (playlist.userId as any).username
-        ? (playlist.userId as any).username
-        : '',
+      creatorName:
+        playlist.userId && (playlist.userId as any).username
+          ? (playlist.userId as any).username
+          : '',
       creatorId: playlist.userId._id,
     };
 
@@ -80,9 +89,10 @@ export class PlaylistsService {
         name: playlist.name,
         description: playlist.description,
         coverImage: playlist.coverImage,
-        creatorName: (playlist.userId as any).username
-          ? (playlist.userId as any).username
-          : '',
+        creatorName:
+          playlist.userId && (playlist.userId as any).username
+            ? (playlist.userId as any).username
+            : '',
         creatorId: playlist.userId._id,
       });
     }
@@ -214,13 +224,109 @@ export class PlaylistsService {
         name: music.name,
         duration: music.duration ? music.duration : '',
         coverImage: music.coverImage ? music.coverImage : '',
-        albumId: music.albumId._id ? music.albumId._id : '',
-        albumName: music.albumId.name ? music.albumId.name : '',
-        ownerId: music.ownerId._id ? music.ownerId._id : '',
-        ownerName: music.ownerId.username ? music.ownerId.username : '',
+        albumId: music.albumId && music.albumId._id ? music.albumId._id : '',
+        albumName:
+          music.albumId && music.albumId.name ? music.albumId.name : '',
+        ownerId: music.ownerId && music.ownerId._id ? music.ownerId._id : '',
+        ownerName:
+          music.ownerId && music.ownerId.username ? music.ownerId.username : '',
       });
     }
 
     return musics;
+  }
+
+  async addMusicToPlaylist(
+    userId: Types.ObjectId,
+    playlistId: Types.ObjectId,
+    musicIds: Types.ObjectId[],
+  ): Promise<AddMusicToPlaylistResponseDto> {
+    const playlist = await this.playlistModel.findById(playlistId);
+    if (!playlist) {
+      throw new NotFoundException(
+        `There isn't any playlist with id: ${playlistId}`,
+      );
+    }
+
+    if (playlist.userId.toString() !== userId.toString()) {
+      throw new ForbiddenException(
+        `You don't have permission to add music to this playlist`,
+      );
+    }
+
+    const music = await this.playlistModel.findOneAndUpdate(
+      { _id: playlistId },
+      { $addToSet: { musics: { $each: musicIds } } },
+      {
+        projection: {
+          _id: 0,
+          name: 1,
+          description: 1,
+          coverImage: 1,
+          musics: 1,
+        },
+        new: true,
+      },
+    );
+
+    const res: AddMusicToPlaylistResponseDto = {
+      name: music.name,
+      description: music.description,
+      coverImage: music.coverImage,
+      musics: music.musics,
+    };
+
+    return res;
+  }
+
+  async removeMusicFromPlaylist(
+    userId: Types.ObjectId,
+    playlistId: Types.ObjectId,
+    musicIds: Types.ObjectId[],
+  ): Promise<RemoveMusicFromPlaylistResponseDto> {
+    const playlist = await this.playlistModel
+      .findById(playlistId)
+      .populate('musics', { albumId: 1 });
+    if (!playlist) {
+      throw new NotFoundException(
+        `There isn't any playlist with id: ${playlistId}`,
+      );
+    }
+
+    if (playlist.userId.toString() !== userId.toString()) {
+      throw new ForbiddenException(
+        `You don't have permission to remove music from this playlist`,
+      );
+    }
+
+    for (let music of playlist.musics as any) {
+      if (music.albumId.toString() === playlistId.toString()) {
+        throw new ForbiddenException(`You can't remove music from this album`);
+      }
+    }
+
+    const music = await this.playlistModel.findOneAndUpdate(
+      { _id: playlistId },
+      { $pullAll: { musics: musicIds } },
+      {
+        projection: {
+          _id: 0,
+          name: 1,
+          description: 1,
+          coverImage: 1,
+          musics: 1,
+        },
+        new: true,
+      },
+    );
+
+    const res: RemoveMusicFromPlaylistResponseDto = {
+      name: music.name,
+      description: music.description,
+      coverImage: music.coverImage,
+      musics: music.musics,
+    };
+
+    return res;
   }
 }
