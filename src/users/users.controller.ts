@@ -29,6 +29,7 @@ import {
   UpgradeToArtistDto,
   UpgradeToPremiumDto,
 } from './dto/create-user.dto';
+import { ProfileDto } from './dto/profile.dto';
 import { UserDto } from './dto/user.dto';
 import { User } from './schema/users.schema';
 import { UsersService } from './users.service';
@@ -192,12 +193,12 @@ export class UsersController {
   })
   @Get('profile')
   @HttpCode(HttpStatus.OK)
-  async getUserProfile(@Req() req) {
+  async getUserProfile(@Req() req): Promise<ProfileDto> {
     const user = await this.usersService.findOneByEmail(req.user.email);
-    return {
-      followersNumber: user.followers.length,
-      followingNumber: user.following.length,
-      playlistsNumber: 999,
-    };
+    const profile: ProfileDto = new ProfileDto();
+    profile.followerCount = user.followers.length;
+    profile.followingCount = user.following.length;
+    profile.playlistCount = 999;
+    return profile;
   }
 }
