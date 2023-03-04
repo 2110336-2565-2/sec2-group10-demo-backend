@@ -208,6 +208,7 @@ export class PlaylistsService {
           coverImage: 1,
           albumId: 1,
           ownerId: 1,
+          url: 1,
         },
       });
 
@@ -230,6 +231,7 @@ export class PlaylistsService {
         ownerId: music.ownerId && music.ownerId._id ? music.ownerId._id : '',
         ownerName:
           music.ownerId && music.ownerId.username ? music.ownerId.username : '',
+        url: music.url ? music.url : '',
       });
     }
 

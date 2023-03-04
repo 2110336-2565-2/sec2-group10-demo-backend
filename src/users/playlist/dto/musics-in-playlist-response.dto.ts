@@ -12,6 +12,7 @@ export class MusicsInPlaylistResponseDto extends PickType(Music, [
   'coverImage',
   'albumId',
   'ownerId',
+  'url',
 ] as const) {
   @ApiProperty({ example: '5ff4c9d8e4b0f8b8b8b8b8b8' })
   musicId: string;
