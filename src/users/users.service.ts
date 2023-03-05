@@ -1,6 +1,7 @@
 import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
 import * as mongoose from 'mongoose';
+import { Role } from 'src/common/enums/role';
 
 import { Injectable } from '@nestjs/common';
 import {
@@ -49,13 +50,14 @@ export class UsersService {
     return this.userModel.find();
   }
 
-  async findOneById(id: string, projection = {}): Promise<UserDto> {
+  async findOneById(id: string, projection = {}): Promise<User> {
     try {
       const user = await this.userModel.findById(id, projection);
-      const userDto = new UserDto();
-      userDto.username = user.username;
-      userDto.email = user.email;
-      return userDto;
+      if (!user) {
+        throw new NotFoundException(`There isn't any user with id: ${id}`);
+      }
+
+      return user;
     } catch (e) {
       throw new NotFoundException(`There isn't any user with id: ${id}`);
     }
@@ -102,5 +104,20 @@ export class UsersService {
     } catch (err) {
       throw new NotFoundException(`There isn't any user with id: ${id}`);
     }
+  }
+
+  async setRoleUser(email: string, role: Role, update_data: any): Promise<any> {
+    const user = await this.findOneByEmail(email);
+
+    if (user.roles.includes(role)) {
+      throw new ConflictException(`User already has ${role} role`);
+    }
+    user.roles.push(role);
+    if (role === Role.Artist) {
+      user.accountNumber = update_data.accountNumber;
+      user.bankName = update_data.bankName;
+    }
+
+    return await this.update(user._id.toString(), user);
   }
 }

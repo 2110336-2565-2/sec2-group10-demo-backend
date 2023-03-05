@@ -99,7 +99,7 @@ export class Playlist {
     ref: Music.name,
     default: [],
   })
-  musics: Types.ObjectId[];
+  musics: string[];
 
   /**
    * Image of the playlist

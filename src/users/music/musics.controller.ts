@@ -1,12 +1,12 @@
-import * as multerGoogleStorage from "multer-google-storage";
+import * as multerGoogleStorage from 'multer-google-storage';
 import {
   uploadFileName,
   uploadLimits,
-  uploadMusicImageFilter
-} from "src/cloudStorage/googleCloud.utils";
-import { JoiValidationPipe } from "src/utils/joiValidation.pipe";
+  uploadMusicImageFilter,
+} from 'src/cloudStorage/googleCloud.utils';
+import { JoiValidationPipe } from 'src/utils/joiValidation.pipe';
 
-import * as Joi from "@hapi/joi";
+import * as Joi from '@hapi/joi';
 import {
   Body,
   Controller,
@@ -15,20 +15,23 @@ import {
   Post,
   Request,
   UploadedFiles,
-  UseInterceptors
-} from "@nestjs/common";
-import { FileFieldsInterceptor } from "@nestjs/platform-express";
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiBody,
   ApiConsumes,
+  ApiParam,
   ApiResponse,
-  ApiTags
-} from "@nestjs/swagger";
+  ApiTags,
+} from '@nestjs/swagger';
 
-import { UploadMusicDto } from "../dto/upload-music.dto";
-import { Music } from "../schema/music.schema";
-import { MusicsService } from "./musics.service";
+import { Public } from '../../auth/public_decorator';
+import { UploadMusicDto } from '../dto/upload-music.dto';
+import { Music } from '../schema/music.schema';
+import { GetMusicsResponseDto } from './dto/get-musics-response.dto';
+import { MusicsService } from './musics.service';
 
 @ApiBearerAuth()
 @ApiTags('users/musics')
@@ -128,5 +131,24 @@ export class MusicsController {
       files.music[0],
       files.coverImage[0],
     );
+  }
+
+  @Public()
+  @Get('/sample/:numberOfMusic')
+  @ApiResponse({
+    status: 200,
+    description: 'Return sample musics',
+    type: [GetMusicsResponseDto],
+  })
+  @ApiParam({
+    name: 'numberOfMusic',
+    description: 'Number of musics to return',
+    type: Number,
+  })
+  async getSampleMusics(
+    @Param('numberOfMusic', new JoiValidationPipe(Joi.number().required()))
+    numberOfMusic: string,
+  ): Promise<GetMusicsResponseDto[]> {
+    return await this.musicsService.getSampleMusics(parseInt(numberOfMusic));
   }
 }

@@ -9,6 +9,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './roles/roles.guard';
+import { RolesModule } from './roles/roles.module';
 import { UsersModule } from './users/users.module';
 import { UtilsModule } from './utils/utils.module';
 
@@ -22,6 +23,7 @@ import { UtilsModule } from './utils/utils.module';
     MongooseModule.forRoot(process.env.DATABASE_URI),
     AuthModule,
     UsersModule,
+    RolesModule,
     UtilsModule,
   ],
   controllers: [AppController],
