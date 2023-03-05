@@ -38,20 +38,6 @@ export class Music {
   name: string;
 
   /**
-   * Owner of the music
-   * @example 5ff4c9d8e4b0f8b8b8b8b8b8
-   * @required
-   * @type string
-   */
-  @ApiProperty({ example: '5ff4c9d8e4b0f8b8b8b8b8b8' })
-  @Prop({
-    type: SchemaTypes.ObjectId,
-    required: true,
-    ref: 'User',
-  })
-  ownerId: Types.ObjectId;
-
-  /**
    * Description of the music
    * @example My music description
    * @maxLength 100
@@ -129,7 +115,7 @@ export class Music {
    */
   @ApiProperty({ example: '5ff4c9d8e4b0f8b8b8b8b8b8' })
   @Prop({ type: SchemaTypes.ObjectId, required: true, auto: false })
-  userId: Types.ObjectId;
+  ownerId: Types.ObjectId;
 
   /**
    * Duration of the music

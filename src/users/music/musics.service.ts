@@ -59,7 +59,7 @@ export class MusicsService {
 
     // Attach url in to Music Dto
     Object.assign(uploadMusicDto, {
-      userId: userId,
+      ownerId: userId,
       coverImage: coverImage.path,
       url: music.path,
       duration: duration,
