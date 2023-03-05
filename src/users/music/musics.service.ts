@@ -1,11 +1,13 @@
-import mongoose, { Model, Types } from "mongoose";
+import { get } from 'https';
+import mongoose, { Model, Types } from 'mongoose';
+import { Duplex } from 'stream';
 
-import { BadRequestException, Injectable } from "@nestjs/common";
-import { InjectConnection, InjectModel } from "@nestjs/mongoose";
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 
-import { UploadMusicDto } from "../dto/upload-music.dto";
-import { PlaylistsService } from "../playlist/playlists.service";
-import { Music, MusicDocument } from "../schema/music.schema";
+import { UploadMusicDto } from '../dto/upload-music.dto';
+import { PlaylistsService } from '../playlist/playlists.service';
+import { Music, MusicDocument } from '../schema/music.schema';
 
 @Injectable()
 export class MusicsService {
@@ -67,9 +69,17 @@ export class MusicsService {
   }
 
   async getMusicDuration(url: string) {
-    return '00:02:00';
+    return '00:00:00';
 
-    // const stream = fs.createReadStream(
+    // ⬇️ This code return "No duration found!"
+    // console.log('URL : ', url);
+    // const buffer = await this.urlToBuffer(url);
+    // const stream = await this.bufferToStream(buffer);
+    // const duration = await getAudioDurationInSeconds(stream);
+    // return duration;
+
+    // ⬇️ fs document said that createReadStream can receive url/ buffer as well, but that's just a lie
+    // const stream = createReadStream(
     //   new URL(
     //     'https://storage.googleapis.com/demo-tuder-music/Shave%20of%20You.mp3',
     //   ),
@@ -77,6 +87,7 @@ export class MusicsService {
     // const duration = await getAudioDurationInSeconds(stream);
     // return duration;
 
+    // ⬇️ Some not working code
     // const mp3file =
     //   'https://raw.githubusercontent.com/prof3ssorSt3v3/media-sample-files/master/doorbell.mp3';
     // const audioContext = new window.AudioContext();
@@ -91,5 +102,30 @@ export class MusicsService {
     //   });
     // };
     // request.send();
+  }
+
+  async urlToBuffer(url: string): Promise<Buffer> {
+    return new Promise((resolve, reject) => {
+      const data: Uint8Array[] = [];
+      get(url, (res) => {
+        res
+          .on('data', (chunk: Uint8Array) => {
+            data.push(chunk);
+          })
+          .on('end', () => {
+            resolve(Buffer.concat(data));
+          })
+          .on('error', (err) => {
+            reject(err);
+          });
+      });
+    });
+  }
+
+  async bufferToStream(myBuffer) {
+    let tmp = new Duplex();
+    tmp.push(myBuffer);
+    tmp.push(null);
+    return tmp;
   }
 }
