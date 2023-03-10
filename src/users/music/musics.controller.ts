@@ -1,6 +1,6 @@
-import * as multerGoogleStorage from 'multer-google-storage';
+import MulterGoogleCloudStorage from 'multer-cloud-storage';
 import {
-  uploadFileName,
+  STORAGE_OPTIONS,
   uploadLimits,
   uploadMusicImageFilter,
 } from 'src/cloudStorage/googleCloud.utils';
@@ -76,12 +76,7 @@ export class MusicsController {
         { name: 'music', maxCount: 1 },
       ],
       {
-        storage: multerGoogleStorage.storageEngine({
-          projectId: process.env.CLOUD_STORAGE_PROJECT_ID,
-          keyFilename: process.env.CLOUD_STORAGE_KEY_FILE_NAME,
-          bucket: process.env.CLOUD_STORAGE_USER_MUSIC_BUCKET,
-          filename: uploadFileName,
-        }),
+        storage: new MulterGoogleCloudStorage(STORAGE_OPTIONS),
         fileFilter: uploadMusicImageFilter,
         limits: uploadLimits,
       },
