@@ -32,6 +32,7 @@ import { UploadMusicDto } from '../dto/upload-music.dto';
 import { Music } from '../schema/music.schema';
 import { GetMusicsResponseDto } from './dto/get-musics-response.dto';
 import { MusicsService } from './musics.service';
+import { FileMetadata } from 'src/cloudStorage/googleCloud.interface';
 
 @ApiBearerAuth()
 @ApiTags('users/musics')
@@ -117,7 +118,7 @@ export class MusicsController {
   async uploadMusic(
     @Request() req,
     @UploadedFiles()
-    files: { coverImage: Express.Multer.File[]; music: Express.Multer.File[] },
+    files: { coverImage: FileMetadata[]; music: FileMetadata[] },
     @Body() uploadMusicDto: UploadMusicDto,
   ) {
     return await this.musicsService.uploadMusic(
