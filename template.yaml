@@ -26,6 +26,10 @@ Globals:
         REGION: !Sub '${AWS::Region}'
         AUTH_SECRET: !Sub '{{resolve:ssm:/demoByTuder/${Environment}/authSecret}}'
         DATABASE_URI: !Sub '{{resolve:ssm:/demoByTuder/${Environment}/databaseUri}}'
+        CLOUD_STORAGE_PROJECT_ID: !Sub '{{resolve:ssm:/demoByTuder/${Environment}/cloudStorageProjectId}}'
+        CLOUD_STORAGE_USER_MUSIC_BUCKET: !Sub '{{resolve:ssm:/demoByTuder/${Environment}/cloudStorageUserMusicBucket}}'
+        CLOUD_STORAGE_USER_MUSIC_LIMIT_SIZE: !Sub '{{resolve:ssm:/demoByTuder/${Environment}/cloudStorageUserMusicLimitSize}}'
+        CLOUD_STORAGE_CREDENTIALS: !Sub '{{resolve:ssm:/demoByTuder/${Environment}/cloudStorageCredentials}}'
 
 Resources:
   # IAM

@@ -1,4 +1,4 @@
-import { BadRequestException } from "@nestjs/common";
+import { BadRequestException } from '@nestjs/common';
 
 export const uploadMusicImageFilter = (req, file, callback) => {
   // check if file format is correct
@@ -44,3 +44,22 @@ export const uploadLimits = {
 //   let idx = url.indexOf(keyword);
 //   return idx >= 0 ? url.substring(idx) : '';
 // };
+
+const getCloudStorageCredentials = (base64: string | undefined): any => {
+  if (base64) {
+    const json = Buffer.from(base64, 'base64').toString('ascii');
+    return JSON.parse(json);
+  }
+  return {};
+};
+
+const getStorageOptions = () => ({
+  projectId: process.env.CLOUD_STORAGE_PROJECT_ID,
+  bucket: process.env.CLOUD_STORAGE_USER_MUSIC_BUCKET,
+  credentials: getCloudStorageCredentials(
+    process.env.CLOUD_STORAGE_CREDENTIALS,
+  ),
+  filename: uploadFileName,
+});
+
+export const STORAGE_OPTIONS = getStorageOptions();
