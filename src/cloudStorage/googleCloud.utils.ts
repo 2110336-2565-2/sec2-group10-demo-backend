@@ -18,8 +18,8 @@ export const uploadFileName = (_req, file, callback) => {
   callback(null, `${Date.now()}.${fileExt}`);
 };
 
-const uploadDestination = (req, _file, callback) => {
-  callback(null, `${req.query.documentType}`);
+const uploadDestination = (_req, file, callback) => {
+  callback(null, `${file.fieldname}`);
 };
 
 export const uploadLimits = {
