@@ -1,10 +1,10 @@
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException } from "@nestjs/common";
 
 export const uploadMusicImageFilter = (req, file, callback) => {
   // check if file format is correct
   return file &&
     file.mimetype &&
-    file.mimetype.match(/(audio|image)\/(mpeg|mp3|wav|jpg|jpeg|png)$/)
+    file.mimetype.match(/(audio|image)\/(mpeg|mp3|flac|m4a|wav|jpg|jpeg|png)$/)
     ? callback(null, true)
     : callback(
         new BadRequestException('Only audio and image file are allowed'),

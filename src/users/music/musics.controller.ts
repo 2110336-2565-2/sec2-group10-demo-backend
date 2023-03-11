@@ -121,7 +121,6 @@ export class MusicsController {
     files: { coverImage: FileMetadata[]; music: FileMetadata[] },
     @Body() uploadMusicDto: UploadMusicDto,
   ) {
-    console.log(files);
     return await this.musicsService.uploadMusic(
       req.user.userId,
       uploadMusicDto,
