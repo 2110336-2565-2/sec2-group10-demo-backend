@@ -1,12 +1,12 @@
-import MulterGoogleCloudStorage from 'multer-cloud-storage';
+import MulterGoogleCloudStorage from "multer-cloud-storage";
 import {
   STORAGE_OPTIONS,
   uploadLimits,
-  uploadMusicImageFilter,
-} from 'src/cloudStorage/googleCloud.utils';
-import { JoiValidationPipe } from 'src/utils/joiValidation.pipe';
+  uploadMusicImageFilter
+} from "src/cloudStorage/googleCloud.utils";
+import { JoiValidationPipe } from "src/utils/joiValidation.pipe";
 
-import * as Joi from '@hapi/joi';
+import * as Joi from "@hapi/joi";
 import {
   Body,
   Controller,
@@ -15,23 +15,23 @@ import {
   Post,
   Request,
   UploadedFiles,
-  UseInterceptors,
-} from '@nestjs/common';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
+  UseInterceptors
+} from "@nestjs/common";
+import { FileFieldsInterceptor } from "@nestjs/platform-express";
 import {
   ApiBearerAuth,
   ApiBody,
   ApiConsumes,
   ApiParam,
   ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+  ApiTags
+} from "@nestjs/swagger";
 
-import { Public } from '../../auth/public_decorator';
-import { UploadMusicDto } from '../dto/upload-music.dto';
-import { Music } from '../schema/music.schema';
-import { GetMusicsResponseDto } from './dto/get-musics-response.dto';
-import { MusicsService } from './musics.service';
+import { Public } from "../../auth/public_decorator";
+import { UploadMusicDto } from "../dto/upload-music.dto";
+import { Music } from "../schema/music.schema";
+import { GetMusicsResponseDto } from "./dto/get-musics-response.dto";
+import { MusicsService } from "./musics.service";
 
 @ApiBearerAuth()
 @ApiTags('users/musics')
@@ -120,6 +120,7 @@ export class MusicsController {
     files: { coverImage: Express.Multer.File[]; music: Express.Multer.File[] },
     @Body() uploadMusicDto: UploadMusicDto,
   ) {
+    console.log(files);
     return await this.musicsService.uploadMusic(
       req.user.userId,
       uploadMusicDto,

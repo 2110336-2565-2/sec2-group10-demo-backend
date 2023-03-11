@@ -1,15 +1,15 @@
-import { get } from 'https';
-import mongoose, { Model, Types } from 'mongoose';
-import { Duplex } from 'stream';
+import { get } from "https";
+import mongoose, { Model, Types } from "mongoose";
+import { Duplex } from "stream";
 
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+import { BadRequestException, Injectable } from "@nestjs/common";
+import { InjectConnection, InjectModel } from "@nestjs/mongoose";
 
-import { UploadMusicDto } from '../dto/upload-music.dto';
-import { MusicsInPlaylistResponseDto } from '../playlist/dto/musics-in-playlist-response.dto';
-import { PlaylistsService } from '../playlist/playlists.service';
-import { Music, MusicDocument } from '../schema/music.schema';
-import { GetMusicsResponseDto } from './dto/get-musics-response.dto';
+import { UploadMusicDto } from "../dto/upload-music.dto";
+import { MusicsInPlaylistResponseDto } from "../playlist/dto/musics-in-playlist-response.dto";
+import { PlaylistsService } from "../playlist/playlists.service";
+import { Music, MusicDocument } from "../schema/music.schema";
+import { GetMusicsResponseDto } from "./dto/get-musics-response.dto";
 
 @Injectable()
 export class MusicsService {
@@ -71,6 +71,17 @@ export class MusicsService {
   }
 
   async getMusicDuration(url: string) {
+    url =
+      'https://storage.googleapis.com/demo-tuder-music/Shave%20of%20You.mp3';
+
+    console.log('URL : ', url);
+    const buffer = await this.urlToBuffer(url);
+    //const metadata = await parseBuffer(buffer, 'audio/mpeg');
+    //console.log(metadata);
+    const stream = await this.bufferToStream(buffer);
+    // const meta = await mm.parseStream(stream);
+    // console.log(meta);
+
     return '00:00:00';
 
     // ⬇️ This code return "No duration found!"
