@@ -1,6 +1,7 @@
 import { get } from "https";
 import mongoose, { Model, Types } from "mongoose";
 import { parseBuffer } from "music-metadata";
+import { FileMetadata } from "src/cloudStorage/googleCloud.interface";
 import { Duplex } from "stream";
 
 import { BadRequestException, Injectable } from "@nestjs/common";
@@ -36,18 +37,18 @@ export class MusicsService {
   async uploadMusic(
     userId: Types.ObjectId,
     uploadMusicDto: UploadMusicDto,
-    music: Express.Multer.File,
-    coverImage: Express.Multer.File,
+    music: FileMetadata,
+    coverImage: FileMetadata,
   ) {
-    if (!(music && music.path)) {
+    if (!(music && music.linkUrl)) {
       throw new BadRequestException('Only audio file are allowed');
     }
-    if (!(coverImage && coverImage.path)) {
+    if (!(coverImage && coverImage.linkUrl)) {
       throw new BadRequestException('Only image file are allowed');
     }
 
     // Get music duration
-    const duration = await this.getMusicDuration(music.path);
+    const duration = await this.getMusicDuration(music.linkUrl);
 
     // Check if Album exist
     try {
@@ -61,8 +62,8 @@ export class MusicsService {
     // Attach url in to Music Dto
     Object.assign(uploadMusicDto, {
       ownerId: userId,
-      coverImage: coverImage.path,
-      url: music.path,
+      coverImage: coverImage.linkUrl,
+      url: music.linkUrl,
       duration: duration,
     });
 

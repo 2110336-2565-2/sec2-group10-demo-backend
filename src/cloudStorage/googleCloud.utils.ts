@@ -12,10 +12,14 @@ export const uploadMusicImageFilter = (req, file, callback) => {
       );
 };
 
-export const uploadFileName = (req, file, callback) => {
+export const uploadFileName = (_req, file, callback) => {
   const fileNameSplit = file.originalname.split('.');
   const fileExt = fileNameSplit[fileNameSplit.length - 1];
-  callback(null, `${req.query.documentType}/${Date.now()}.${fileExt}`);
+  callback(null, `${Date.now()}.${fileExt}`);
+};
+
+const uploadDestination = (_req, file, callback) => {
+  callback(null, `${file.fieldname}`);
 };
 
 export const uploadLimits = {
@@ -54,12 +58,14 @@ const getCloudStorageCredentials = (base64: string | undefined): any => {
 };
 
 const getStorageOptions = () => ({
+  acl: 'publicRead' as const,
   projectId: process.env.CLOUD_STORAGE_PROJECT_ID,
   bucket: process.env.CLOUD_STORAGE_USER_MUSIC_BUCKET,
   credentials: getCloudStorageCredentials(
     process.env.CLOUD_STORAGE_CREDENTIALS,
   ),
   filename: uploadFileName,
+  destination: uploadDestination,
 });
 
 export const STORAGE_OPTIONS = getStorageOptions();

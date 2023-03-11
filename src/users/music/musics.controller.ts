@@ -1,4 +1,5 @@
 import MulterGoogleCloudStorage from "multer-cloud-storage";
+import { FileMetadata } from "src/cloudStorage/googleCloud.interface";
 import {
   STORAGE_OPTIONS,
   uploadLimits,
@@ -117,7 +118,7 @@ export class MusicsController {
   async uploadMusic(
     @Request() req,
     @UploadedFiles()
-    files: { coverImage: Express.Multer.File[]; music: Express.Multer.File[] },
+    files: { coverImage: FileMetadata[]; music: FileMetadata[] },
     @Body() uploadMusicDto: UploadMusicDto,
   ) {
     console.log(files);
