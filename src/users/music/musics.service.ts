@@ -1,5 +1,6 @@
 import { get } from "https";
 import mongoose, { Model, Types } from "mongoose";
+import { parseBuffer } from "music-metadata";
 import { Duplex } from "stream";
 
 import { BadRequestException, Injectable } from "@nestjs/common";
@@ -71,50 +72,9 @@ export class MusicsService {
   }
 
   async getMusicDuration(url: string) {
-    url =
-      'https://storage.googleapis.com/demo-tuder-music/Shave%20of%20You.mp3';
-
-    console.log('URL : ', url);
     const buffer = await this.urlToBuffer(url);
-    //const metadata = await parseBuffer(buffer, 'audio/mpeg');
-    //console.log(metadata);
-    const stream = await this.bufferToStream(buffer);
-    // const meta = await mm.parseStream(stream);
-    // console.log(meta);
-
-    return '00:00:00';
-
-    // ⬇️ This code return "No duration found!"
-    // console.log('URL : ', url);
-    // const buffer = await this.urlToBuffer(url);
-    // const stream = await this.bufferToStream(buffer);
-    // const duration = await getAudioDurationInSeconds(stream);
-    // return duration;
-
-    // ⬇️ fs document said that createReadStream can receive url/ buffer as well, but that's just a lie
-    // const stream = createReadStream(
-    //   new URL(
-    //     'https://storage.googleapis.com/demo-tuder-music/Shave%20of%20You.mp3',
-    //   ),
-    // );
-    // const duration = await getAudioDurationInSeconds(stream);
-    // return duration;
-
-    // ⬇️ Some not working code
-    // const mp3file =
-    //   'https://raw.githubusercontent.com/prof3ssorSt3v3/media-sample-files/master/doorbell.mp3';
-    // const audioContext = new window.AudioContext();
-    // const request = new XMLHttpRequest();
-    // request.open('GET', mp3file, true);
-    // request.responseType = 'arraybuffer';
-    // request.onload = function () {
-    //   audioContext.decodeAudioData(request.response, function (buffer) {
-    //     let duration = buffer.duration;
-    //     console.log(duration);
-    //     //document.write(duration);
-    //   });
-    // };
-    // request.send();
+    const metadata = await parseBuffer(buffer, 'audio/mpeg');
+    return Math.round(metadata.format.duration);
   }
 
   async urlToBuffer(url: string): Promise<Buffer> {
