@@ -1,17 +1,17 @@
-import { get } from "https";
-import mongoose, { Model, Types } from "mongoose";
-import { parseBuffer } from "music-metadata";
-import { FileMetadata } from "src/cloudStorage/googleCloud.interface";
-import { Duplex } from "stream";
+import { get } from 'https';
+import mongoose, { Model, Types } from 'mongoose';
+import { parseBuffer } from 'music-metadata';
+import { FileMetadata } from 'src/cloudStorage/googleCloud.interface';
+import { Duplex } from 'stream';
 
-import { BadRequestException, Injectable } from "@nestjs/common";
-import { InjectConnection, InjectModel } from "@nestjs/mongoose";
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 
-import { UploadMusicDto } from "../dto/upload-music.dto";
-import { MusicsInPlaylistResponseDto } from "../playlist/dto/musics-in-playlist-response.dto";
-import { PlaylistsService } from "../playlist/playlists.service";
-import { Music, MusicDocument } from "../schema/music.schema";
-import { GetMusicsResponseDto } from "./dto/get-musics-response.dto";
+import { UploadMusicDto } from '../dto/upload-music.dto';
+import { MusicsInPlaylistResponseDto } from '../playlist/dto/musics-in-playlist-response.dto';
+import { PlaylistsService } from '../playlist/playlists.service';
+import { Music, MusicDocument } from '../schema/music.schema';
+import { GetMusicsResponseDto } from './dto/get-musics-response.dto';
 
 @Injectable()
 export class MusicsService {
@@ -69,7 +69,16 @@ export class MusicsService {
 
     // Create and return the music
     let createdMusic = new this.musicModel(uploadMusicDto);
-    return createdMusic.save();
+    const musicDoc = await createdMusic.save();
+
+    // Add music to album
+    await this.playlistsService.addMusicToPlaylist(
+      userId,
+      new Types.ObjectId(uploadMusicDto.albumId),
+      [musicDoc._id],
+    );
+
+    return createdMusic;
   }
 
   async getMusicDuration(url: string) {
