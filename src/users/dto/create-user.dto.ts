@@ -47,7 +47,7 @@ export class UpgradeToPremiumDto {
   @ApiProperty({ example: '12/25' })
   @IsNotEmpty()
   @IsString()
-  ExpireDate: string;
+  expireDate: string;
 
   @ApiProperty({ example: '123' })
   @IsNotEmpty()
