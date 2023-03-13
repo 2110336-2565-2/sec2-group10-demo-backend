@@ -202,4 +202,15 @@ export class UsersController {
     profile.playlistCount = 999;
     return profile;
   }
+
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'return role',
+  })
+  @Get('role')
+  @HttpCode(HttpStatus.OK)
+  async getRole(@Req() req) {
+    const user = await this.usersService.findOneByEmail(req.user.email);
+    return user.roles;
+  }
 }
