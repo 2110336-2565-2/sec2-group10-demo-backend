@@ -180,7 +180,8 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   @HttpCode(HttpStatus.CONFLICT)
   @Put('role/premium')
-  async upgradeToPremium(@Res() req, @Body() body: UpgradeToPremiumDto) {
+  async upgradeToPremium(@Req() req, @Body() body: UpgradeToPremiumDto) {
+    // console.log(req);
     await this.usersService.setRoleUser(req.user.email, Role.Premium, body);
 
     return { message: 'success to upgrade to premium', success: true };
