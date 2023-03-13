@@ -200,6 +200,8 @@ export class UsersController {
     profile.followerCount = user.followers.length;
     profile.followingCount = user.following.length;
     profile.playlistCount = 999;
+    profile.username = user.username;
+    profile.profilePicture = 'https://picsum.photos/200/300';
     return profile;
   }
 
