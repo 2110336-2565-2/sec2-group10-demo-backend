@@ -29,6 +29,7 @@ import {
   UpgradeToArtistDto,
   UpgradeToPremiumDto,
 } from './dto/create-user.dto';
+import { ProfileDto } from './dto/profile.dto';
 import { UserDto } from './dto/user.dto';
 import { User } from './schema/users.schema';
 import { UsersService } from './users.service';
@@ -65,7 +66,7 @@ export class UsersController {
   @ApiNotFoundResponse({
     description: 'User not found',
   })
-  @Get(':id')
+  @Get('user/:id')
   @HttpCode(HttpStatus.OK)
   @HttpCode(HttpStatus.NOT_FOUND)
   async getUser(@Param() params) {
@@ -183,5 +184,21 @@ export class UsersController {
     await this.usersService.setRoleUser(req.user.email, Role.Premium, body);
 
     return { message: 'success to upgrade to premium', success: true };
+  }
+
+  //mock get profile
+
+  @ApiOkResponse({
+    description: 'Return user profile',
+  })
+  @Get('profile')
+  @HttpCode(HttpStatus.OK)
+  async getUserProfile(@Req() req): Promise<ProfileDto> {
+    const user = await this.usersService.findOneByEmail(req.user.email);
+    const profile: ProfileDto = new ProfileDto();
+    profile.followerCount = user.followers.length;
+    profile.followingCount = user.following.length;
+    profile.playlistCount = 999;
+    return profile;
   }
 }

@@ -86,6 +86,22 @@ export class User {
   @ApiProperty({ example: ['user'] })
   @Prop({ default: ['user'] })
   roles: Role[];
+
+  /**
+   * followers of the user
+   * @example ['sern@gmail.com']
+   */
+  @ApiProperty({ example: ['sern@gmail.com'] })
+  @Prop({ default: [] })
+  followers: string[];
+
+  /**
+   * following of the user
+   * @example ['sern@gmail.com']
+   */
+  @ApiProperty({ example: ['sern@gmail.com'] })
+  @Prop({ default: [] })
+  following: string[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
