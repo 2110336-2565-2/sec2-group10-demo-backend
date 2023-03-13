@@ -1,7 +1,7 @@
-import { SchemaTypes, Types } from 'mongoose';
+import { SchemaTypes, Types } from "mongoose";
 
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { ApiProperty } from '@nestjs/swagger';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { ApiProperty } from "@nestjs/swagger";
 
 export type MusicDocument = Music & Document;
 
@@ -118,16 +118,16 @@ export class Music {
   ownerId: Types.ObjectId;
 
   /**
-   * Duration of the music
-   * @example 00:00:00
+   * Duration of the music in second
+   * @example 211
    * @required
-   * @type string
+   * @type number
    */
-  @ApiProperty({ example: '00:00:00' })
+  @ApiProperty({ example: 211 })
   @Prop({
     required: true,
   })
-  duration: string;
+  duration: number;
 }
 
 export const MusicSchema = SchemaFactory.createForClass(Music);

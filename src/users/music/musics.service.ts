@@ -1,16 +1,17 @@
-import { get } from 'https';
-import mongoose, { Model, Types } from 'mongoose';
-import { Duplex } from 'stream';
+import { get } from "https";
+import mongoose, { Model, Types } from "mongoose";
+import { parseBuffer } from "music-metadata";
+import { FileMetadata } from "src/cloudStorage/googleCloud.interface";
+import { Duplex } from "stream";
 
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+import { BadRequestException, Injectable } from "@nestjs/common";
+import { InjectConnection, InjectModel } from "@nestjs/mongoose";
 
-import { UploadMusicDto } from '../dto/upload-music.dto';
-import { MusicsInPlaylistResponseDto } from '../playlist/dto/musics-in-playlist-response.dto';
-import { PlaylistsService } from '../playlist/playlists.service';
-import { Music, MusicDocument } from '../schema/music.schema';
-import { GetMusicsResponseDto } from './dto/get-musics-response.dto';
-import { FileMetadata } from 'src/cloudStorage/googleCloud.interface';
+import { UploadMusicDto } from "../dto/upload-music.dto";
+import { MusicsInPlaylistResponseDto } from "../playlist/dto/musics-in-playlist-response.dto";
+import { PlaylistsService } from "../playlist/playlists.service";
+import { Music, MusicDocument } from "../schema/music.schema";
+import { GetMusicsResponseDto } from "./dto/get-musics-response.dto";
 
 @Injectable()
 export class MusicsService {
@@ -72,39 +73,9 @@ export class MusicsService {
   }
 
   async getMusicDuration(url: string) {
-    return '00:00:00';
-
-    // ⬇️ This code return "No duration found!"
-    // console.log('URL : ', url);
-    // const buffer = await this.urlToBuffer(url);
-    // const stream = await this.bufferToStream(buffer);
-    // const duration = await getAudioDurationInSeconds(stream);
-    // return duration;
-
-    // ⬇️ fs document said that createReadStream can receive url/ buffer as well, but that's just a lie
-    // const stream = createReadStream(
-    //   new URL(
-    //     'https://storage.googleapis.com/demo-tuder-music/Shave%20of%20You.mp3',
-    //   ),
-    // );
-    // const duration = await getAudioDurationInSeconds(stream);
-    // return duration;
-
-    // ⬇️ Some not working code
-    // const mp3file =
-    //   'https://raw.githubusercontent.com/prof3ssorSt3v3/media-sample-files/master/doorbell.mp3';
-    // const audioContext = new window.AudioContext();
-    // const request = new XMLHttpRequest();
-    // request.open('GET', mp3file, true);
-    // request.responseType = 'arraybuffer';
-    // request.onload = function () {
-    //   audioContext.decodeAudioData(request.response, function (buffer) {
-    //     let duration = buffer.duration;
-    //     console.log(duration);
-    //     //document.write(duration);
-    //   });
-    // };
-    // request.send();
+    const buffer = await this.urlToBuffer(url);
+    const metadata = await parseBuffer(buffer, 'audio/mpeg');
+    return Math.round(metadata.format.duration);
   }
 
   async urlToBuffer(url: string): Promise<Buffer> {
