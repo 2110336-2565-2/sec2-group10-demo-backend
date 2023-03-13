@@ -199,10 +199,15 @@ export class PlaylistsController {
     );
   }
 
-  @Delete(':id/musics')
+  @Delete(':id/music/:musicId')
   @ApiParam({
     name: 'id',
     description: 'Playlist id',
+    type: String,
+  })
+  @ApiParam({
+    name: 'musicId',
+    description: 'Music id',
     type: String,
   })
   @ApiResponse({
@@ -210,23 +215,18 @@ export class PlaylistsController {
     description: 'Return playlist with removed music',
     type: RemoveMusicFromPlaylistResponseDto,
   })
-  @ApiBody({
-    description: 'Music ids',
-    type: RemoveMusicFromPlaylistResponseDto,
-  })
   async removeMusicFromPlaylist(
     @Req() req,
     @Param('id', new JoiValidationPipe(Joi.string().required()))
     playlistId: string,
-    @Body('musicIds')
-    musicIds: string[],
+    @Param('musicId', new JoiValidationPipe(Joi.string().required()))
+    musicId: string,
   ): Promise<UpdatePlaylistInfoResponseDto> {
-    this.utilsService.validateMongoId([...musicIds, playlistId]);
+    this.utilsService.validateMongoId([musicId, playlistId]);
 
     let formatIds: Types.ObjectId[] = [];
-    for (let musicId of musicIds) {
-      formatIds.push(new Types.ObjectId(musicId));
-    }
+    formatIds.push(new Types.ObjectId(musicId));
+
     return await this.playlistService.removeMusicFromPlaylist(
       req.user.userId,
       new Types.ObjectId(playlistId),
