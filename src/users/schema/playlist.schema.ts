@@ -8,6 +8,12 @@ import { User } from "./users.schema";
 
 export type PlaylistDocument = Playlist & Document;
 
+export enum PlaylistType {
+  playlist = 'playlist',
+  album = 'album',
+  all = 'all',
+}
+
 @Schema()
 export class Playlist {
   /**
