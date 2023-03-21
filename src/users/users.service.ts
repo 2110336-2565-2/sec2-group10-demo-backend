@@ -1,18 +1,18 @@
-import * as bcrypt from 'bcrypt';
-import { Model } from 'mongoose';
-import * as mongoose from 'mongoose';
-import { Role } from 'src/common/enums/role';
+import * as bcrypt from "bcrypt";
+import { Model } from "mongoose";
+import * as mongoose from "mongoose";
+import { Role } from "src/common/enums/role";
 
-import { Injectable } from '@nestjs/common';
+import { Injectable } from "@nestjs/common";
 import {
   ConflictException,
-  NotFoundException,
-} from '@nestjs/common/exceptions';
-import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+  NotFoundException
+} from "@nestjs/common/exceptions";
+import { InjectConnection, InjectModel } from "@nestjs/mongoose";
 
-import { CreateUserDto, UpdateUserDto } from './dto/create-user.dto';
-import { UserDto } from './dto/user.dto';
-import { User, UserDocument } from './schema/users.schema';
+import { CreateUserDto, UpdateUserDto } from "./dto/create-user.dto";
+import { UserDto } from "./dto/user.dto";
+import { User, UserDocument } from "./schema/users.schema";
 
 @Injectable()
 export class UsersService {
@@ -21,7 +21,10 @@ export class UsersService {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<CreateUserDto> {
+  async create(
+    createUserDto: CreateUserDto,
+    profileImage: string,
+  ): Promise<CreateUserDto> {
     // Set email to lowercase
     createUserDto.email = createUserDto.email.toLowerCase();
 
@@ -40,7 +43,10 @@ export class UsersService {
     createUserDto.password = await bcrypt.hash(password, salt);
 
     // Attach username to createUserDto
-    Object.assign(createUserDto, { username: createUserDto.email });
+    Object.assign(createUserDto, {
+      username: createUserDto.email,
+      profileImage: profileImage,
+    });
 
     const createdUser = new this.userModel(createUserDto);
     return createdUser.save();

@@ -1,6 +1,6 @@
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString } from "class-validator";
 
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from "@nestjs/swagger";
 
 export class UserDto {
   @ApiProperty({ example: 'sernhiwkhao' })
@@ -12,4 +12,12 @@ export class UserDto {
   @IsNotEmpty()
   @IsEmail()
   email: string;
+
+  @ApiProperty({
+    example:
+      'https://storage.googleapis.com/demo-tuder-music/coverImage/1679409670439.jpg',
+  })
+  @IsNotEmpty()
+  @IsString()
+  profileImage: string;
 }
