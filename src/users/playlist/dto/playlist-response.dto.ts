@@ -9,6 +9,7 @@ export class GetPlaylistInfoResponseDto extends PickType(Playlist, [
   'name',
   'description',
   'coverImage',
+  'isAlbum',
 ] as const) {
   /**
    * username of the owner

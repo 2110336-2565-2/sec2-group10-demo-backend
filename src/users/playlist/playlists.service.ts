@@ -9,7 +9,11 @@ import { InjectModel } from '@nestjs/mongoose';
 
 import { CreatePlaylistDto } from '../dto/create-playlist.dto';
 import { EditPlaylistDto } from '../dto/edit-playlist.dto';
-import { Playlist, PlaylistDocument } from '../schema/playlist.schema';
+import {
+  Playlist,
+  PlaylistDocument,
+  PlaylistType,
+} from '../schema/playlist.schema';
 import {
   AddMusicToPlaylistResponseDto,
   MusicsInPlaylistResponseDto,
@@ -38,6 +42,7 @@ export class PlaylistsService {
         description: 1,
         coverImage: 1,
         userId: 1,
+        isAlbum: 1,
       })
       .populate('userId', { username: 1 });
 
@@ -57,6 +62,7 @@ export class PlaylistsService {
           ? (playlist.userId as any).username
           : '',
       creatorId: playlist.userId._id,
+      isAlbum: playlist.isAlbum,
     };
 
     return res;
@@ -64,12 +70,14 @@ export class PlaylistsService {
 
   async getPlaylistsInfo(
     userId: Types.ObjectId,
-    isAlbum: boolean,
+    isAlbum: PlaylistType = PlaylistType.all,
   ): Promise<GetPlaylistInfoResponseDto[]> {
     // Initialize filter
     const filter = { userId: userId };
-    if (isAlbum) {
+    if (isAlbum === PlaylistType.album) {
       filter['isAlbum'] = true;
+    } else if (isAlbum === PlaylistType.playlist) {
+      filter['isAlbum'] = false;
     }
 
     // Get playlists
@@ -79,6 +87,7 @@ export class PlaylistsService {
         description: 1,
         coverImage: 1,
         userId: 1,
+        isAlbum: 1,
       })
       .populate('userId', { username: 1 });
 
@@ -94,6 +103,7 @@ export class PlaylistsService {
             ? (playlist.userId as any).username
             : '',
         creatorId: playlist.userId._id,
+        isAlbum: playlist.isAlbum,
       });
     }
     return res;
