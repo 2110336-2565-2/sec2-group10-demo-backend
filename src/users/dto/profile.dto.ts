@@ -1,6 +1,6 @@
-import { IsNumber, IsString } from 'class-validator';
+import { IsNumber, IsString } from "class-validator";
 
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from "@nestjs/swagger";
 
 export class ProfileDto {
   @ApiProperty({ example: 50 })
@@ -17,7 +17,7 @@ export class ProfileDto {
 
   @ApiProperty({ example: 'www.example.com' })
   @IsString()
-  profilePicture: string;
+  profileImage: string;
 
   @ApiProperty({ example: 'alone' })
   @IsString()
