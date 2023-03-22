@@ -88,14 +88,6 @@ export class User {
   roles: Role[];
 
   /**
-   * followers of the user
-   * @example ['sern@gmail.com']
-   */
-  @ApiProperty({ example: ['sern@gmail.com'] })
-  @Prop({ default: [] })
-  followers: string[];
-
-  /**
    * following of the user
    * @example ['sern@gmail.com']
    */

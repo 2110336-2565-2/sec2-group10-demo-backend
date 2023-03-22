@@ -226,7 +226,7 @@ export class UsersController {
   async getUserProfile(@Req() req): Promise<ProfileDto> {
     const user = await this.usersService.findOneByEmail(req.user.email);
     const profile: ProfileDto = new ProfileDto();
-    profile.followerCount = user.followers.length;
+    profile.followerCount = 0;
     profile.followingCount = user.following.length;
     profile.playlistCount = 999;
     profile.username = user.username;
