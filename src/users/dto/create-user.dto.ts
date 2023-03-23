@@ -13,7 +13,12 @@ export class CreateUserDto {
   @IsEmail()
   email: string;
 
-  @ApiProperty({ example: 'please upload image file in this field' })
+  @ApiProperty({
+    type: 'string',
+    format: 'binary',
+    required: true,
+    description: 'please upload image file in this field',
+  })
   profileImage: any;
 }
 

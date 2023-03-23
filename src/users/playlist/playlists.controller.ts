@@ -25,6 +25,7 @@ import { FileFieldsInterceptor } from "@nestjs/platform-express";
 import {
   ApiBearerAuth,
   ApiBody,
+  ApiConsumes,
   ApiParam,
   ApiQuery,
   ApiResponse,
@@ -103,6 +104,7 @@ export class PlaylistsController {
   }
 
   @Post()
+  @ApiConsumes('multipart/form-data')
   @ApiResponse({
     status: 201,
     description: 'Return created playlist',

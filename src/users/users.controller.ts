@@ -28,6 +28,7 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiConflictResponse,
+  ApiConsumes,
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
@@ -87,6 +88,8 @@ export class UsersController {
     return this.usersService.findOneById(params.id);
   }
 
+  @Post()
+  @ApiConsumes('multipart/form-data')
   @ApiCreatedResponse({
     description: 'Return created user',
     type: UserDto,
@@ -97,7 +100,6 @@ export class UsersController {
   @ApiConflictResponse({
     description: 'Email already exists',
   })
-  @Post()
   @UseInterceptors(
     FileFieldsInterceptor([{ name: 'profileImage', maxCount: 1 }], {
       storage: new MulterGoogleCloudStorage(STORAGE_OPTIONS),
