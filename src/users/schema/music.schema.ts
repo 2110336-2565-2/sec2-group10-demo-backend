@@ -132,7 +132,7 @@ export class Music {
    */
   @ApiProperty({ example: 211 })
   @Prop({
-    type: String,
+    type: Number,
     required: true,
   })
   duration: number;
