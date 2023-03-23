@@ -1,38 +1,53 @@
-import { Response } from 'express';
-import { Role } from 'src/common/enums/role';
-import { Roles } from 'src/roles/roles.decorator';
+import { Response } from "express";
+import MulterGoogleCloudStorage from "multer-cloud-storage";
+import { FileMetadata } from "src/cloudStorage/googleCloud.interface";
+import {
+  STORAGE_OPTIONS,
+  uploadLimits,
+  uploadMusicImageFilter
+} from "src/cloudStorage/googleCloud.utils";
+import { Role } from "src/common/enums/role";
+import { Roles } from "src/roles/roles.decorator";
 
-import { Controller, Param, Post } from '@nestjs/common';
-import { Body, HttpCode, Req, Res } from '@nestjs/common/decorators';
+import {
+  Controller,
+  Param,
+  Post,
+  UploadedFiles,
+  UseInterceptors
+} from "@nestjs/common";
+import { Body, HttpCode, Req, Res } from "@nestjs/common/decorators";
 import {
   Delete,
   Get,
-  Put,
-} from '@nestjs/common/decorators/http/request-mapping.decorator';
-import { HttpStatus } from '@nestjs/common/enums';
+  Put
+} from "@nestjs/common/decorators/http/request-mapping.decorator";
+import { HttpStatus } from "@nestjs/common/enums";
+import { FileFieldsInterceptor } from "@nestjs/platform-express";
 import {
   ApiBearerAuth,
   ApiBody,
   ApiConflictResponse,
+  ApiConsumes,
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiParam,
-  ApiTags,
-} from '@nestjs/swagger';
+  ApiTags
+} from "@nestjs/swagger";
 
-import { Public } from '../auth/public_decorator';
+import { Public } from "../auth/public_decorator";
 import {
   CreateUserDto,
   UpdateUserDto,
   UpgradeToArtistDto,
-  UpgradeToPremiumDto,
-} from './dto/create-user.dto';
-import { ProfileDto } from './dto/profile.dto';
-import { UserDto } from './dto/user.dto';
-import { User } from './schema/users.schema';
-import { UsersService } from './users.service';
+  UpgradeToPremiumDto
+} from "./dto/create-user.dto";
+import { ProfileDto } from "./dto/profile.dto";
+import { UserDto } from "./dto/user.dto";
+import { User } from "./schema/users.schema";
+import { UsersService } from "./users.service";
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -73,6 +88,8 @@ export class UsersController {
     return this.usersService.findOneById(params.id);
   }
 
+  @Post()
+  @ApiConsumes('multipart/form-data')
   @ApiCreatedResponse({
     description: 'Return created user',
     type: UserDto,
@@ -83,19 +100,31 @@ export class UsersController {
   @ApiConflictResponse({
     description: 'Email already exists',
   })
-  @Post()
+  @UseInterceptors(
+    FileFieldsInterceptor([{ name: 'profileImage', maxCount: 1 }], {
+      storage: new MulterGoogleCloudStorage(STORAGE_OPTIONS),
+      fileFilter: uploadMusicImageFilter,
+      limits: uploadLimits,
+    }),
+  )
   @Public()
   @HttpCode(HttpStatus.CREATED)
   @HttpCode(HttpStatus.NOT_FOUND)
   @HttpCode(HttpStatus.CONFLICT)
   async registerUser(
     @Body() createUserDto: CreateUserDto,
+    @UploadedFiles()
+    files: { profileImage: FileMetadata[] },
     @Res() res: Response,
   ): Promise<Response> {
-    const user = await this.usersService.create(createUserDto);
+    const user = await this.usersService.create(
+      createUserDto,
+      files.profileImage[0].linkUrl,
+    );
     return res.json({
       email: user.email,
       message: 'User created successfully',
+      profileImage: files.profileImage[0].linkUrl,
     });
   }
 
@@ -201,7 +230,7 @@ export class UsersController {
     profile.followingCount = user.following.length;
     profile.playlistCount = 999;
     profile.username = user.username;
-    profile.profilePicture = 'https://picsum.photos/200/300';
+    profile.profileImage = user.profileImage;
     return profile;
   }
 

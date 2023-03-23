@@ -1,30 +1,30 @@
-import { Model, Types } from 'mongoose';
+import { Model, Types } from "mongoose";
 
 import {
   ForbiddenException,
   Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
+  NotFoundException
+} from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
 
-import { CreatePlaylistDto } from '../dto/create-playlist.dto';
-import { EditPlaylistDto } from '../dto/edit-playlist.dto';
+import { CreatePlaylistDto } from "../dto/create-playlist.dto";
+import { EditPlaylistDto } from "../dto/edit-playlist.dto";
 import {
   Playlist,
   PlaylistDocument,
-  PlaylistType,
-} from '../schema/playlist.schema';
+  PlaylistType
+} from "../schema/playlist.schema";
 import {
   AddMusicToPlaylistResponseDto,
   MusicsInPlaylistResponseDto,
-  RemoveMusicFromPlaylistResponseDto,
-} from './dto/musics-in-playlist-response.dto';
+  RemoveMusicFromPlaylistResponseDto
+} from "./dto/musics-in-playlist-response.dto";
 import {
   CreatePlaylistResponseDto,
   DeletePlaylistResponseDto,
   GetPlaylistInfoResponseDto,
-  UpdatePlaylistInfoResponseDto,
-} from './dto/playlist-response.dto';
+  UpdatePlaylistInfoResponseDto
+} from "./dto/playlist-response.dto";
 
 @Injectable()
 export class PlaylistsService {
@@ -112,8 +112,12 @@ export class PlaylistsService {
   async createPlaylist(
     userId: Types.ObjectId,
     createPlaylistDto: CreatePlaylistDto,
+    coverImage: string,
   ): Promise<CreatePlaylistResponseDto> {
-    Object.assign(createPlaylistDto, { userId: userId });
+    Object.assign(createPlaylistDto, {
+      userId: userId,
+      coverImage: coverImage,
+    });
 
     const playlist = new this.playlistModel(createPlaylistDto);
     const createdPlaylist = await playlist.save();

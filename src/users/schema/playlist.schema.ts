@@ -1,10 +1,10 @@
-import { SchemaTypes, Types } from 'mongoose';
+import { SchemaTypes, Types } from "mongoose";
 
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { ApiProperty } from '@nestjs/swagger';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { ApiProperty } from "@nestjs/swagger";
 
-import { Music } from './music.schema';
-import { User } from './users.schema';
+import { Music } from "./music.schema";
+import { User } from "./users.schema";
 
 export type PlaylistDocument = Playlist & Document;
 
