@@ -1,29 +1,29 @@
-import { Response } from "express";
-import MulterGoogleCloudStorage from "multer-cloud-storage";
-import { FileMetadata } from "src/cloudStorage/googleCloud.interface";
+import { Response } from 'express';
+import MulterGoogleCloudStorage from 'multer-cloud-storage';
+import { FileMetadata } from 'src/cloudStorage/googleCloud.interface';
 import {
   STORAGE_OPTIONS,
   uploadLimits,
-  uploadMusicImageFilter
-} from "src/cloudStorage/googleCloud.utils";
-import { Role } from "src/common/enums/role";
-import { Roles } from "src/roles/roles.decorator";
+  uploadMusicImageFilter,
+} from 'src/cloudStorage/googleCloud.utils';
+import { Role } from 'src/common/enums/role';
+import { Roles } from 'src/roles/roles.decorator';
 
 import {
   Controller,
   Param,
   Post,
   UploadedFiles,
-  UseInterceptors
-} from "@nestjs/common";
-import { Body, HttpCode, Req, Res } from "@nestjs/common/decorators";
+  UseInterceptors,
+} from '@nestjs/common';
+import { Body, HttpCode, Req, Res } from '@nestjs/common/decorators';
 import {
   Delete,
   Get,
-  Put
-} from "@nestjs/common/decorators/http/request-mapping.decorator";
-import { HttpStatus } from "@nestjs/common/enums";
-import { FileFieldsInterceptor } from "@nestjs/platform-express";
+  Put,
+} from '@nestjs/common/decorators/http/request-mapping.decorator';
+import { HttpStatus } from '@nestjs/common/enums';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -34,20 +34,20 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiParam,
-  ApiTags
-} from "@nestjs/swagger";
+  ApiTags,
+} from '@nestjs/swagger';
 
-import { Public } from "../auth/public_decorator";
+import { Public } from '../auth/public_decorator';
 import {
   CreateUserDto,
   UpdateUserDto,
   UpgradeToArtistDto,
-  UpgradeToPremiumDto
-} from "./dto/create-user.dto";
-import { ProfileDto } from "./dto/profile.dto";
-import { UserDto } from "./dto/user.dto";
-import { User } from "./schema/users.schema";
-import { UsersService } from "./users.service";
+  UpgradeToPremiumDto,
+} from './dto/create-user.dto';
+import { ProfileDto } from './dto/profile.dto';
+import { UserDto } from './dto/user.dto';
+import { User } from './schema/users.schema';
+import { UsersService } from './users.service';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -252,5 +252,14 @@ export class UsersController {
   async followAritist(@Req() req, @Param() params) {
     await this.usersService.followArtist(req.user.email, params.followeename);
     return { message: 'success to follow user', success: true };
+  }
+
+  @ApiBearerAuth()
+  @ApiParam({ name: 'followeename' })
+  @Put('unfollow/:followeename')
+  @HttpCode(HttpStatus.OK)
+  async unfollowAritist(@Req() req, @Param() params) {
+    await this.usersService.unfollowArtist(req.user.email, params.followeename);
+    return { message: 'success to unfollow user', success: true };
   }
 }
