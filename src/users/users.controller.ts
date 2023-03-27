@@ -262,4 +262,12 @@ export class UsersController {
     await this.usersService.unfollowArtist(req.user.email, params.followeename);
     return { message: 'success to unfollow user', success: true };
   }
+
+  @ApiBearerAuth()
+  @ApiParam({ name: 'followeename' })
+  @Get('follower/:followeename')
+  @HttpCode(HttpStatus.OK)
+  async getFollowers(@Param() params) {
+    return await this.usersService.getFollowers(params.followeename);
+  }
 }

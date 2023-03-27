@@ -174,4 +174,34 @@ export class UsersService {
 
     await this.update(follower._id.toString(), follower);
   }
+
+  async getFollowers(username: string): Promise<UserDto[]> {
+    const user = await this.findOneByUsername(username);
+    if (!user) {
+      throw new NotFoundException(
+        `There isn't any user with username: ${username}`,
+      );
+    }
+    const followers = await this.userModel.aggregate([
+      {
+        $unwind: {
+          path: '$following',
+        },
+      },
+      {
+        $match: {
+          following: user._id,
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          username: 1,
+          email: 1,
+          profileImage: 1,
+        },
+      },
+    ]);
+    return followers;
+  }
 }
