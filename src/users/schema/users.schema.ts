@@ -1,8 +1,8 @@
-import { Document, SchemaTypes, Types } from "mongoose";
-import { Role } from "src/common/enums/role";
+import { Document, SchemaTypes, Types } from 'mongoose';
+import { Role } from 'src/common/enums/role';
 
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { ApiProperty } from "@nestjs/swagger";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { ApiProperty } from '@nestjs/swagger';
 
 export type UserDocument = User & Document;
 
@@ -93,7 +93,7 @@ export class User {
    */
   @ApiProperty({ example: [new Types.ObjectId('5ff4c9d8e4b0f8b8b8b8b8b8')] })
   @Prop({ default: [] })
-  following: string[];
+  following: Types.ObjectId[];
 
   /**
    * url of profile image of the user
@@ -105,7 +105,6 @@ export class User {
   })
   @Prop({ required: true })
   profileImage: string;
-  following: Types.ObjectId[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
