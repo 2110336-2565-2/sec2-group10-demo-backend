@@ -126,4 +126,27 @@ export class UsersService {
 
     return await this.update(user._id.toString(), user);
   }
+
+  async followArtist(
+    followerEmail: string,
+    followeename: string,
+  ): Promise<any> {
+    const follower = await this.findOneByEmail(followerEmail);
+    const followee = await this.findOneByUsername(followeename);
+
+    if (!followee) {
+      throw new NotFoundException(
+        `There isn't any user with username: ${followeename}`,
+      );
+    }
+    if (!followee.roles.includes(Role.Artist)) {
+      throw new ConflictException(`${followeename} is not an artist`);
+    }
+    if (follower.following.includes(followee._id)) {
+      throw new ConflictException(`User already follows ${followeename}`);
+    }
+    follower.following.push(followee._id);
+
+    await this.update(follower._id.toString(), follower);
+  }
 }

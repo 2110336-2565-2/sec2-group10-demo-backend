@@ -89,9 +89,9 @@ export class User {
 
   /**
    * following of the user
-   * @example ['sern@gmail.com']
+   * @example [5ff4c9d8e4b0f8b8b8b8b8b8']
    */
-  @ApiProperty({ example: ['sern@gmail.com'] })
+  @ApiProperty({ example: [new Types.ObjectId('5ff4c9d8e4b0f8b8b8b8b8b8')] })
   @Prop({ default: [] })
   following: string[];
 
@@ -105,6 +105,7 @@ export class User {
   })
   @Prop({ required: true })
   profileImage: string;
+  following: Types.ObjectId[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

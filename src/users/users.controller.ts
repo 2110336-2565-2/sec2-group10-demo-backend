@@ -244,4 +244,13 @@ export class UsersController {
     const user = await this.usersService.findOneByEmail(req.user.email);
     return user.roles;
   }
+
+  @ApiBearerAuth()
+  @ApiParam({ name: 'followeename' })
+  @Put('follow/:followeename')
+  @HttpCode(HttpStatus.OK)
+  async followAritist(@Req() req, @Param() params) {
+    await this.usersService.followArtist(req.user.email, params.followeename);
+    return { message: 'success to follow user', success: true };
+  }
 }
