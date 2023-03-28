@@ -221,16 +221,36 @@ export class UsersController {
   @ApiOkResponse({
     description: 'Return user profile',
   })
-  @Get('profile')
+  @Get('profile/me')
   @HttpCode(HttpStatus.OK)
-  async getUserProfile(@Req() req): Promise<ProfileDto> {
+  async getMyProfile(@Req() req): Promise<ProfileDto> {
     const user = await this.usersService.findOneByEmail(req.user.email);
+    const follower = await this.usersService.getFollowers(req.user.name);
     const profile: ProfileDto = new ProfileDto();
-    profile.followerCount = 0;
+    profile.followerCount = follower.length;
     profile.followingCount = user.following.length;
     profile.playlistCount = 999;
     profile.username = user.username;
     profile.profileImage = user.profileImage;
+    profile.roles = user.roles;
+
+    return profile;
+  }
+
+  @Get('profile/:id')
+  @ApiParam({ name: 'id' })
+  @HttpCode(HttpStatus.OK)
+  async getUserProfile(@Req() req): Promise<ProfileDto> {
+    const user = await this.usersService.findOneById(req.params.id);
+    const follower = await this.usersService.getFollowers(req.user.name);
+    const profile: ProfileDto = new ProfileDto();
+    profile.followerCount = follower.length;
+    profile.followingCount = user.following.length;
+    profile.playlistCount = 999;
+    profile.username = user.username;
+    profile.profileImage = user.profileImage;
+    profile.roles = user.roles;
+
     return profile;
   }
 
