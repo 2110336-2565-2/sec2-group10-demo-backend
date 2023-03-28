@@ -225,7 +225,7 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   async getMyProfile(@Req() req): Promise<ProfileDto> {
     const user = await this.usersService.findOneByEmail(req.user.email);
-    const follower = await this.usersService.getFollowers(req.user.name);
+    const follower = await this.usersService.getFollowers(user.username);
     const profile: ProfileDto = new ProfileDto();
     profile.followerCount = follower.length;
     profile.followingCount = user.following.length;
@@ -242,7 +242,7 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   async getUserProfile(@Req() req): Promise<ProfileDto> {
     const user = await this.usersService.findOneById(req.params.id);
-    const follower = await this.usersService.getFollowers(req.user.name);
+    const follower = await this.usersService.getFollowers(user.username);
     const profile: ProfileDto = new ProfileDto();
     profile.followerCount = follower.length;
     profile.followingCount = user.following.length;
