@@ -1,6 +1,7 @@
-import { IsNumber, IsString } from "class-validator";
+import { IsNumber, IsString } from 'class-validator';
+import { Role } from 'src/common/enums/role';
 
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export class ProfileDto {
   @ApiProperty({ example: 50 })
@@ -22,4 +23,8 @@ export class ProfileDto {
   @ApiProperty({ example: 'alone' })
   @IsString()
   username: string;
+
+  @ApiProperty({ example: [Role.User] })
+  @IsString({ each: true })
+  roles: Role[];
 }
