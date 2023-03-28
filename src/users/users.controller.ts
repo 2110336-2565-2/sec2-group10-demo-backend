@@ -270,4 +270,12 @@ export class UsersController {
   async getFollowers(@Param() params) {
     return await this.usersService.getFollowers(params.followeename);
   }
+
+  @ApiBearerAuth()
+  @ApiParam({ name: 'followeename' })
+  @Get('following/:followeename')
+  @HttpCode(HttpStatus.OK)
+  async getFollowing(@Param() params) {
+    return await this.usersService.getFollowing(params.followeename);
+  }
 }
