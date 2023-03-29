@@ -5,6 +5,8 @@ import { Genre } from 'src/constants/music';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 
+import { User } from './users.schema';
+
 export type MusicDocument = Music & Document;
 
 @Schema()
@@ -116,7 +118,12 @@ export class Music {
    * @required
    */
   @ApiProperty({ example: '5ff4c9d8e4b0f8b8b8b8b8b8' })
-  @Prop({ type: SchemaTypes.ObjectId, required: true, auto: false })
+  @Prop({
+    type: SchemaTypes.ObjectId,
+    required: true,
+    auto: false,
+    ref: User.name,
+  })
   ownerId: Types.ObjectId;
 
   /**
@@ -127,6 +134,7 @@ export class Music {
    */
   @ApiProperty({ example: 211 })
   @Prop({
+    type: Number,
     required: true,
   })
   duration: number;
