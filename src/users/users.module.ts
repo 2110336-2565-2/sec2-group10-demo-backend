@@ -9,6 +9,8 @@ import { PlaylistsService } from './playlist/playlists.service';
 import { Music, MusicSchema } from './schema/music.schema';
 import { Playlist, PlaylistSchema } from './schema/playlist.schema';
 import { User, UserSchema } from './schema/users.schema';
+import { SearchController } from './search/search.controller';
+import { SearchService } from './search/search.service';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 
@@ -20,8 +22,19 @@ import { UsersService } from './users.service';
       { name: Music.name, schema: MusicSchema },
     ]),
   ],
-  controllers: [UsersController, MusicsController, PlaylistsController],
-  providers: [UsersService, MusicsService, PlaylistsService, UtilsService],
+  controllers: [
+    UsersController,
+    MusicsController,
+    PlaylistsController,
+    SearchController,
+  ],
+  providers: [
+    UsersService,
+    MusicsService,
+    PlaylistsService,
+    UtilsService,
+    SearchService,
+  ],
   exports: [UsersService, MusicsService, PlaylistsService],
 })
 export class UsersModule {}
