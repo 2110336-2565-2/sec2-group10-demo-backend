@@ -1,18 +1,18 @@
-import * as bcrypt from "bcrypt";
-import { Model } from "mongoose";
-import * as mongoose from "mongoose";
-import { Role } from "src/common/enums/role";
+import * as bcrypt from 'bcrypt';
+import { Model } from 'mongoose';
+import * as mongoose from 'mongoose';
+import { Role } from 'src/common/enums/role';
 
-import { Injectable } from "@nestjs/common";
+import { Injectable } from '@nestjs/common';
 import {
   ConflictException,
-  NotFoundException
-} from "@nestjs/common/exceptions";
-import { InjectConnection, InjectModel } from "@nestjs/mongoose";
+  NotFoundException,
+} from '@nestjs/common/exceptions';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 
-import { CreateUserDto, UpdateUserDto } from "./dto/create-user.dto";
-import { UserDto } from "./dto/user.dto";
-import { User, UserDocument } from "./schema/users.schema";
+import { CreateUserDto, UpdateUserDto } from './dto/create-user.dto';
+import { UserDto } from './dto/user.dto';
+import { User, UserDocument } from './schema/users.schema';
 
 @Injectable()
 export class UsersService {
@@ -125,5 +125,53 @@ export class UsersService {
     }
 
     return await this.update(user._id.toString(), user);
+  }
+
+  async followArtist(
+    followerEmail: string,
+    followeeName: string,
+  ): Promise<any> {
+    const follower = await this.findOneByEmail(followerEmail);
+    const followee = await this.findOneByUsername(followeeName);
+
+    if (!followee) {
+      throw new NotFoundException(
+        `There isn't any user with username: ${followeeName}`,
+      );
+    }
+    if (!followee.roles.includes(Role.Artist)) {
+      throw new ConflictException(`${followeeName} is not an artist`);
+    }
+    if (follower.following.includes(followee._id)) {
+      throw new ConflictException(`User already follows ${followeeName}`);
+    }
+    follower.following.push(followee._id);
+
+    await this.update(follower._id.toString(), follower);
+  }
+
+  async unfollowArtist(
+    followerEmail: string,
+    followeeName: string,
+  ): Promise<any> {
+    const follower = await this.findOneByEmail(followerEmail);
+    const followee = await this.findOneByUsername(followeeName);
+
+    if (!followee) {
+      throw new NotFoundException(
+        `There isn't any user with username: ${followeeName}`,
+      );
+    }
+    if (!followee.roles.includes(Role.Artist)) {
+      throw new ConflictException(`${followeeName} is not an artist`);
+    }
+    if (!follower.following.includes(followee._id)) {
+      throw new ConflictException(`User doesn't follow ${followeeName}`);
+    }
+    follower.following = follower.following.filter(
+      (id) => id.toString() !== followee._id.toString(),
+    );
+
+    await this.update(follower._id.toString(), follower);
   }
 }
