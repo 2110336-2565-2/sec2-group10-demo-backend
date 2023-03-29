@@ -246,20 +246,20 @@ export class UsersController {
   }
 
   @ApiBearerAuth()
-  @ApiParam({ name: 'followeename' })
-  @Put('follow/:followeename')
+  @ApiParam({ name: 'followeeName' })
+  @Put('follow/:followeeName')
   @HttpCode(HttpStatus.OK)
-  async followAritist(@Req() req, @Param() params) {
-    await this.usersService.followArtist(req.user.email, params.followeename);
+  async followArtist(@Req() req, @Param() params) {
+    await this.usersService.followArtist(req.user.email, params.followeeName);
     return { message: 'success to follow user', success: true };
   }
 
   @ApiBearerAuth()
-  @ApiParam({ name: 'followeename' })
-  @Put('unfollow/:followeename')
+  @ApiParam({ name: 'followeeName' })
+  @Put('unfollow/:followeeName')
   @HttpCode(HttpStatus.OK)
-  async unfollowAritist(@Req() req, @Param() params) {
-    await this.usersService.unfollowArtist(req.user.email, params.followeename);
+  async unfollowArtist(@Req() req, @Param() params) {
+    await this.usersService.unfollowArtist(req.user.email, params.followeeName);
     return { message: 'success to unfollow user', success: true };
   }
 }
