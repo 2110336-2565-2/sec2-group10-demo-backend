@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 
 import { Optional } from '@nestjs/common';
 
@@ -10,6 +10,7 @@ export class FilterInputQueryDto {
    * @example 5f9f1c9b9b9b9b9b9b9b9b9b
    */
   @IsNotEmpty()
+  @IsString()
   userId: string;
 
   /**
