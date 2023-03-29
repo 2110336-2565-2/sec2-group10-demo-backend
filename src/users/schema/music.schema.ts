@@ -1,7 +1,9 @@
-import { SchemaTypes, Types } from "mongoose";
+import { IsEnum, IsOptional } from 'class-validator';
+import { SchemaTypes, Types } from 'mongoose';
+import { Genre } from 'src/constants/music';
 
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { ApiProperty } from "@nestjs/swagger";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { ApiProperty } from '@nestjs/swagger';
 
 export type MusicDocument = Music & Document;
 
@@ -128,6 +130,20 @@ export class Music {
     required: true,
   })
   duration: number;
+
+  /**
+   * Array of music genre
+   * @example ['Pop','Hip-Hop']
+   * @required
+   * @type Genre[]
+   */
+  @ApiProperty({ example: ['Pop', 'Hip-Hop'] })
+  @IsEnum(Genre, { each: true })
+  @IsOptional()
+  @Prop({
+    required: false,
+  })
+  genre?: Genre[];
 }
 
 export const MusicSchema = SchemaFactory.createForClass(Music);

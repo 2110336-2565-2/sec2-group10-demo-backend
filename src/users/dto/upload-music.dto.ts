@@ -1,6 +1,13 @@
-import { IsNotEmpty, IsOptional, IsString, Matches } from "class-validator";
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Matches,
+} from 'class-validator';
+import { Genre } from 'src/constants/music';
 
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export class UploadMusicDto {
   @ApiProperty({ example: 'Shave of Me' })
@@ -17,4 +24,9 @@ export class UploadMusicDto {
   @IsNotEmpty()
   @IsString()
   albumId: string;
+
+  @ApiProperty({ example: 'Pop' })
+  @IsEnum(Genre, { each: true })
+  @IsOptional()
+  genre?: Genre[];
 }
