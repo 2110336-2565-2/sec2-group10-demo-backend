@@ -284,18 +284,18 @@ export class UsersController {
   }
 
   @ApiBearerAuth()
-  @ApiParam({ name: 'followeename' })
-  @Get('follower/:followeename')
+  @ApiParam({ name: 'followeeName' })
+  @Get('follower/:followeeName')
   @HttpCode(HttpStatus.OK)
   async getFollowers(@Param() params) {
-    return await this.usersService.getFollowers(params.followeename);
+    return await this.usersService.getFollowers(params.followeeName);
   }
 
   @ApiBearerAuth()
-  @ApiParam({ name: 'followeename' })
-  @Get('following/:followeename')
+  @ApiParam({ name: 'followeeName' })
+  @Get('following/:followeeName')
   @HttpCode(HttpStatus.OK)
   async getFollowing(@Param() params) {
-    return await this.usersService.getFollowing(params.followeename);
+    return await this.usersService.getFollowing(params.followeeName);
   }
 }
