@@ -1,13 +1,13 @@
-import { Types } from "mongoose";
-import MulterGoogleCloudStorage from "multer-cloud-storage";
-import { FileMetadata } from "src/cloudStorage/googleCloud.interface";
+import { Types } from 'mongoose';
+import MulterGoogleCloudStorage from 'multer-cloud-storage';
+import { FileMetadata } from 'src/cloudStorage/googleCloud.interface';
 import {
   STORAGE_OPTIONS,
   uploadLimits,
-  uploadMusicImageFilter
-} from "src/cloudStorage/googleCloud.utils";
+  uploadMusicImageFilter,
+} from 'src/cloudStorage/googleCloud.utils';
 
-import * as Joi from "@hapi/joi";
+import * as Joi from '@hapi/joi';
 import {
   Body,
   Controller,
@@ -19,9 +19,9 @@ import {
   Query,
   Req,
   UploadedFiles,
-  UseInterceptors
-} from "@nestjs/common";
-import { FileFieldsInterceptor } from "@nestjs/platform-express";
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -29,27 +29,28 @@ import {
   ApiParam,
   ApiQuery,
   ApiResponse,
-  ApiTags
-} from "@nestjs/swagger";
+  ApiTags,
+} from '@nestjs/swagger';
 
-import { JoiValidationPipe } from "../../utils/joiValidation.pipe";
-import { UtilsService } from "../../utils/utils.service";
-import { CreatePlaylistDto } from "../dto/create-playlist.dto";
-import { EditPlaylistDto } from "../dto/edit-playlist.dto";
-import { FilterInputQueryDto } from "./dto/isAlbum-input-dto";
+import { Public } from '../../auth/public_decorator';
+import { JoiValidationPipe } from '../../utils/joiValidation.pipe';
+import { UtilsService } from '../../utils/utils.service';
+import { CreatePlaylistDto } from '../dto/create-playlist.dto';
+import { EditPlaylistDto } from '../dto/edit-playlist.dto';
+import { FilterInputQueryDto } from './dto/isAlbum-input-dto';
 import {
   AddMusicToPlaylistBodyDto,
   AddMusicToPlaylistResponseDto,
   MusicsInPlaylistResponseDto,
-  RemoveMusicFromPlaylistResponseDto
-} from "./dto/musics-in-playlist-response.dto";
+  RemoveMusicFromPlaylistResponseDto,
+} from './dto/musics-in-playlist-response.dto';
 import {
   CreatePlaylistResponseDto,
   DeletePlaylistResponseDto,
   GetPlaylistInfoResponseDto,
-  UpdatePlaylistInfoResponseDto
-} from "./dto/playlist-response.dto";
-import { PlaylistsService } from "./playlists.service";
+  UpdatePlaylistInfoResponseDto,
+} from './dto/playlist-response.dto';
+import { PlaylistsService } from './playlists.service';
 
 @ApiBearerAuth()
 @ApiTags('users/playlists')
@@ -60,11 +61,18 @@ export class PlaylistsController {
     private readonly utilsService: UtilsService,
   ) {}
 
-  @Get('all')
+  @Public()
+  @Get()
   @ApiQuery({
     name: 'filter',
     required: false,
     description: '"album" for albums, "playlist" for playlists, "all" for both',
+    type: String,
+  })
+  @ApiQuery({
+    name: 'userId',
+    required: true,
+    description: 'User id',
     type: String,
   })
   @ApiResponse({
@@ -73,13 +81,12 @@ export class PlaylistsController {
     type: [GetPlaylistInfoResponseDto],
   })
   async getPlaylists(
-    @Req() req,
     @Query()
     query: FilterInputQueryDto,
   ): Promise<GetPlaylistInfoResponseDto[]> {
-    this.utilsService.validateMongoId(req.user.userId);
+    this.utilsService.validateMongoId(query.userId);
     return await this.playlistService.getPlaylistsInfo(
-      req.user.userId,
+      new Types.ObjectId(query.userId),
       query.filter,
     );
   }
