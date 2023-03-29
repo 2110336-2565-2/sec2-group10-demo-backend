@@ -129,21 +129,21 @@ export class UsersService {
 
   async followArtist(
     followerEmail: string,
-    followeename: string,
+    followeeName: string,
   ): Promise<any> {
     const follower = await this.findOneByEmail(followerEmail);
-    const followee = await this.findOneByUsername(followeename);
+    const followee = await this.findOneByUsername(followeeName);
 
     if (!followee) {
       throw new NotFoundException(
-        `There isn't any user with username: ${followeename}`,
+        `There isn't any user with username: ${followeeName}`,
       );
     }
     if (!followee.roles.includes(Role.Artist)) {
-      throw new ConflictException(`${followeename} is not an artist`);
+      throw new ConflictException(`${followeeName} is not an artist`);
     }
     if (follower.following.includes(followee._id)) {
-      throw new ConflictException(`User already follows ${followeename}`);
+      throw new ConflictException(`User already follows ${followeeName}`);
     }
     follower.following.push(followee._id);
 
@@ -152,21 +152,21 @@ export class UsersService {
 
   async unfollowArtist(
     followerEmail: string,
-    followeename: string,
+    followeeName: string,
   ): Promise<any> {
     const follower = await this.findOneByEmail(followerEmail);
-    const followee = await this.findOneByUsername(followeename);
+    const followee = await this.findOneByUsername(followeeName);
 
     if (!followee) {
       throw new NotFoundException(
-        `There isn't any user with username: ${followeename}`,
+        `There isn't any user with username: ${followeeName}`,
       );
     }
     if (!followee.roles.includes(Role.Artist)) {
-      throw new ConflictException(`${followeename} is not an artist`);
+      throw new ConflictException(`${followeeName} is not an artist`);
     }
     if (!follower.following.includes(followee._id)) {
-      throw new ConflictException(`User doesn't follow ${followeename}`);
+      throw new ConflictException(`User doesn't follow ${followeeName}`);
     }
     follower.following = follower.following.filter(
       (id) => id.toString() !== followee._id.toString(),
