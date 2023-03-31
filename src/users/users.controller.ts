@@ -1,5 +1,6 @@
 import { Response } from 'express';
 import MulterGoogleCloudStorage from 'multer-cloud-storage';
+import { type } from 'os';
 import { FileMetadata } from 'src/cloudStorage/googleCloud.interface';
 import {
   STORAGE_OPTIONS,
@@ -45,6 +46,7 @@ import {
   UpgradeToPremiumDto,
 } from './dto/create-user.dto';
 import { ProfileDto } from './dto/profile.dto';
+import { ResponseDto } from './dto/response.dto';
 import { UserDto } from './dto/user.dto';
 import { PlaylistsService } from './playlist/playlists.service';
 import { User } from './schema/users.schema';
@@ -221,6 +223,7 @@ export class UsersController {
 
   @ApiOkResponse({
     description: 'Return user profile',
+    type: ProfileDto,
   })
   @Get('profile/me')
   @HttpCode(HttpStatus.OK)
@@ -229,6 +232,10 @@ export class UsersController {
     return profile;
   }
 
+  @ApiOkResponse({
+    description: 'Return specific user profile',
+    type: ProfileDto,
+  })
   @Get('profile/:id')
   @ApiParam({ name: 'id' })
   @HttpCode(HttpStatus.OK)
@@ -248,22 +255,42 @@ export class UsersController {
     return user.roles;
   }
 
+  @ApiOkResponse({
+    description: 'Success to follow user',
+    type: ResponseDto,
+  })
   @ApiParam({ name: 'followeeName' })
   @Put('follow/:followeeName')
   @HttpCode(HttpStatus.OK)
   async followArtist(@Req() req, @Param() params) {
     await this.usersService.followArtist(req.user.email, params.followeeName);
-    return { message: 'success to follow user', success: true };
+    const response: ResponseDto = {
+      message: 'success to follow user',
+      success: true,
+    };
+    return response;
   }
 
+  @ApiOkResponse({
+    description: 'Success to unfollow user',
+    type: ResponseDto,
+  })
   @ApiParam({ name: 'followeeName' })
   @Put('unfollow/:followeeName')
   @HttpCode(HttpStatus.OK)
   async unfollowArtist(@Req() req, @Param() params) {
     await this.usersService.unfollowArtist(req.user.email, params.followeeName);
-    return { message: 'success to unfollow user', success: true };
+    const response: ResponseDto = {
+      message: 'success to unfollow user',
+      success: true,
+    };
+    return response;
   }
 
+  @ApiOkResponse({
+    description: 'Return list of followers',
+    type: [UserDto],
+  })
   @ApiParam({ name: 'followeeName' })
   @Get('follower/:followeeName')
   @HttpCode(HttpStatus.OK)
@@ -271,6 +298,10 @@ export class UsersController {
     return await this.usersService.getFollowers(params.followeeName);
   }
 
+  @ApiOkResponse({
+    description: 'Return list of following',
+    type: [UserDto],
+  })
   @ApiParam({ name: 'followeeName' })
   @Get('following/:followeeName')
   @HttpCode(HttpStatus.OK)
