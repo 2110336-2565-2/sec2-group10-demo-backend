@@ -21,6 +21,7 @@ import { Body, HttpCode, Req, Res } from '@nestjs/common/decorators';
 import {
   Delete,
   Get,
+  Patch,
   Put,
 } from '@nestjs/common/decorators/http/request-mapping.decorator';
 import { HttpStatus } from '@nestjs/common/enums';
@@ -47,6 +48,7 @@ import {
 } from './dto/create-user.dto';
 import { ProfileDto } from './dto/profile.dto';
 import { ResponseDto } from './dto/response.dto';
+import { UpdateUsernameDto } from './dto/update-username.dto';
 import { UserDto } from './dto/user.dto';
 import { PlaylistsService } from './playlist/playlists.service';
 import { User } from './schema/users.schema';
@@ -307,5 +309,21 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   async getFollowing(@Param() params) {
     return await this.usersService.getFollowing(params.followeeName);
+  }
+
+  @ApiOkResponse({
+    description: 'Success to update username',
+    type: ResponseDto,
+  })
+  @ApiBody({ type: UpdateUsernameDto })
+  @Patch('username')
+  @HttpCode(HttpStatus.OK)
+  async updateMyUsername(@Req() req, @Body() body: UpdateUsernameDto) {
+    const user = await this.usersService.updateUsername(
+      req.user.email,
+      body.username,
+    );
+
+    return user;
   }
 }

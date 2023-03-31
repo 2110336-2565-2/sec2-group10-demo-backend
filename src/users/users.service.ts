@@ -266,4 +266,13 @@ export class UsersService {
     };
     return profile;
   }
+
+  async updateUsername(email: string, username: string): Promise<UserDto> {
+    const user = await this.findOneByEmail(email);
+    if (user.username === username) {
+      throw new ConflictException(`Username already exists`);
+    }
+    user.username = username;
+    return await this.update(user._id.toString(), user);
+  }
 }
