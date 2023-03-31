@@ -1,11 +1,4 @@
 import { Types } from 'mongoose';
-import MulterGoogleCloudStorage from 'multer-cloud-storage';
-import { FileMetadata } from 'src/cloudStorage/googleCloud.interface';
-import {
-  STORAGE_OPTIONS,
-  uploadLimits,
-  uploadMusicImageFilter,
-} from 'src/cloudStorage/googleCloud.utils';
 
 import * as Joi from '@hapi/joi';
 import {
@@ -18,14 +11,10 @@ import {
   Post,
   Query,
   Req,
-  UploadedFiles,
-  UseInterceptors,
 } from '@nestjs/common';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiBody,
-  ApiConsumes,
   ApiParam,
   ApiQuery,
   ApiResponse,
@@ -138,28 +127,16 @@ export class PlaylistsController {
   }
 
   @Post()
-  @ApiConsumes('multipart/form-data')
   @ApiResponse({
     status: 201,
     description: 'Return created playlist',
     type: CreatePlaylistResponseDto,
   })
-  @UseInterceptors(
-    FileFieldsInterceptor([{ name: 'coverImage', maxCount: 1 }], {
-      storage: new MulterGoogleCloudStorage(STORAGE_OPTIONS),
-      fileFilter: uploadMusicImageFilter,
-      limits: uploadLimits,
-    }),
-  )
-  async createPlaylist(
-    @Req() req,
-    @Body() body: CreatePlaylistDto,
-    @UploadedFiles() files: { coverImage: FileMetadata[] },
-  ) {
+  async createPlaylist(@Req() req, @Body() body: CreatePlaylistDto) {
     return await this.playlistService.createPlaylist(
       req.user.userId,
       body,
-      files.coverImage[0].linkUrl,
+      body.coverImage,
     );
   }
 
