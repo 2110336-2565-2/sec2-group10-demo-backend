@@ -1,5 +1,6 @@
 import { Response } from 'express';
 import MulterGoogleCloudStorage from 'multer-cloud-storage';
+import { type } from 'os';
 import { FileMetadata } from 'src/cloudStorage/googleCloud.interface';
 import {
   STORAGE_OPTIONS,
@@ -20,6 +21,7 @@ import { Body, HttpCode, Req, Res } from '@nestjs/common/decorators';
 import {
   Delete,
   Get,
+  Patch,
   Put,
 } from '@nestjs/common/decorators/http/request-mapping.decorator';
 import { HttpStatus } from '@nestjs/common/enums';
@@ -45,7 +47,10 @@ import {
   UpgradeToPremiumDto,
 } from './dto/create-user.dto';
 import { ProfileDto } from './dto/profile.dto';
+import { ResponseDto } from './dto/response.dto';
+import { UpdateUsernameDto } from './dto/update-username.dto';
 import { UserDto } from './dto/user.dto';
+import { PlaylistsService } from './playlist/playlists.service';
 import { User } from './schema/users.schema';
 import { UsersService } from './users.service';
 
@@ -53,7 +58,10 @@ import { UsersService } from './users.service';
 @ApiBearerAuth()
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly playlistsService: PlaylistsService,
+  ) {}
 
   @Roles(Role.User)
   @ApiOkResponse({
@@ -186,7 +194,7 @@ export class UsersController {
   }
 
   //set role artist
-  @ApiBearerAuth()
+
   @ApiOkResponse({
     description: 'Success to upgrade to artist',
   })
@@ -201,7 +209,7 @@ export class UsersController {
   }
 
   //set role premium
-  @ApiBearerAuth()
+
   @ApiOkResponse({
     description: 'Success to upgrade to premium',
   })
@@ -210,31 +218,35 @@ export class UsersController {
   @HttpCode(HttpStatus.CONFLICT)
   @Put('role/premium')
   async upgradeToPremium(@Req() req, @Body() body: UpgradeToPremiumDto) {
-    // console.log(req);
     await this.usersService.setRoleUser(req.user.email, Role.Premium, body);
 
     return { message: 'success to upgrade to premium', success: true };
   }
 
-  //mock get profile
-
   @ApiOkResponse({
     description: 'Return user profile',
+    type: ProfileDto,
   })
-  @Get('profile')
+  @Get('profile/me')
   @HttpCode(HttpStatus.OK)
-  async getUserProfile(@Req() req): Promise<ProfileDto> {
-    const user = await this.usersService.findOneByEmail(req.user.email);
-    const profile: ProfileDto = new ProfileDto();
-    profile.followerCount = 0;
-    profile.followingCount = user.following.length;
-    profile.playlistCount = 999;
-    profile.username = user.username;
-    profile.profileImage = user.profileImage;
+  async getMyProfile(@Req() req): Promise<ProfileDto> {
+    const profile = await this.usersService.getProfile(req.user.email);
     return profile;
   }
 
-  @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'Return specific user profile',
+    type: ProfileDto,
+  })
+  @Get('profile/:id')
+  @ApiParam({ name: 'id' })
+  @HttpCode(HttpStatus.OK)
+  async getUserProfile(@Param() param): Promise<ProfileDto> {
+    const user = await this.usersService.findOneById(param.id);
+    const profile = await this.usersService.getProfile(user.email);
+    return profile;
+  }
+
   @ApiOkResponse({
     description: 'return role',
   })
@@ -245,21 +257,79 @@ export class UsersController {
     return user.roles;
   }
 
-  @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'Success to follow user',
+    type: ResponseDto,
+  })
   @ApiParam({ name: 'followeeName' })
   @Put('follow/:followeeName')
   @HttpCode(HttpStatus.OK)
   async followArtist(@Req() req, @Param() params) {
     await this.usersService.followArtist(req.user.email, params.followeeName);
-    return { message: 'success to follow user', success: true };
+    const response: ResponseDto = {
+      message: 'success to follow user',
+      success: true,
+    };
+    return response;
   }
 
-  @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'Success to unfollow user',
+    type: ResponseDto,
+  })
   @ApiParam({ name: 'followeeName' })
   @Put('unfollow/:followeeName')
   @HttpCode(HttpStatus.OK)
   async unfollowArtist(@Req() req, @Param() params) {
     await this.usersService.unfollowArtist(req.user.email, params.followeeName);
-    return { message: 'success to unfollow user', success: true };
+    const response: ResponseDto = {
+      message: 'success to unfollow user',
+      success: true,
+    };
+    return response;
+  }
+
+  @ApiOkResponse({
+    description: 'Return list of followers',
+    type: [UserDto],
+  })
+  @ApiParam({ name: 'followeeName' })
+  @Get('follower/:followeeName')
+  @HttpCode(HttpStatus.OK)
+  async getFollowers(@Param() params) {
+    return await this.usersService.getFollowers(params.followeeName);
+  }
+
+  @ApiOkResponse({
+    description: 'Return list of following',
+    type: [UserDto],
+  })
+  @ApiParam({ name: 'followeeName' })
+  @Get('following/:followeeName')
+  @HttpCode(HttpStatus.OK)
+  async getFollowing(@Param() params) {
+    return await this.usersService.getFollowing(params.followeeName);
+  }
+
+  @ApiOkResponse({
+    description: 'Success to update username',
+    type: UserDto,
+  })
+  @ApiBody({ type: UpdateUsernameDto })
+  @Patch('profile')
+  @HttpCode(HttpStatus.OK)
+  async updateMyUsername(
+    @Req() req,
+    @Body()
+    body: {
+      username?: string;
+    },
+  ) {
+    const user = await this.usersService.updateUsername(
+      req.user.email,
+      body.username,
+    );
+
+    return user;
   }
 }

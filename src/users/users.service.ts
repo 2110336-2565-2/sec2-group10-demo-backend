@@ -3,7 +3,7 @@ import { Model } from 'mongoose';
 import * as mongoose from 'mongoose';
 import { Role } from 'src/common/enums/role';
 
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import {
   ConflictException,
   NotFoundException,
@@ -11,7 +11,9 @@ import {
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 
 import { CreateUserDto, UpdateUserDto } from './dto/create-user.dto';
+import { ProfileDto } from './dto/profile.dto';
 import { UserDto } from './dto/user.dto';
+import { PlaylistsService } from './playlist/playlists.service';
 import { User, UserDocument } from './schema/users.schema';
 
 @Injectable()
@@ -19,6 +21,8 @@ export class UsersService {
   constructor(
     @InjectConnection() private readonly connection: mongoose.Connection,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @Inject(PlaylistsService)
+    private readonly playlistsService: PlaylistsService,
   ) {}
 
   async create(
@@ -173,5 +177,108 @@ export class UsersService {
     );
 
     await this.update(follower._id.toString(), follower);
+  }
+
+  async getFollowers(username: string): Promise<UserDto[]> {
+    const user = await this.findOneByUsername(username);
+    if (!user) {
+      throw new NotFoundException(
+        `There isn't any user with username: ${username}`,
+      );
+    }
+    const followersQuery = await this.userModel.aggregate([
+      {
+        $unwind: {
+          path: '$following',
+        },
+      },
+      {
+        $match: {
+          following: user._id,
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          username: 1,
+          email: 1,
+          profileImage: 1,
+        },
+      },
+    ]);
+    const followers = this.queryArrayToUserDtoArray(followersQuery);
+
+    return followers;
+  }
+  queryArrayToUserDtoArray(queryArray: any[]): UserDto[] {
+    const userDtoArray: UserDto[] = [];
+    for (const user of queryArray) {
+      const userDto: UserDto = {
+        username: user.username,
+        email: user.email,
+        profileImage: user.profileImage,
+      };
+      userDtoArray.push(userDto);
+    }
+    return userDtoArray;
+  }
+
+  async getFollowing(username: string): Promise<UserDto[]> {
+    const user = await this.findOneByUsername(username);
+    if (!user) {
+      throw new NotFoundException(
+        `There isn't any user with username: ${username}`,
+      );
+    }
+    const followingQuery = await this.userModel.aggregate([
+      {
+        $match: {
+          _id: {
+            $in: user.following,
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          username: 1,
+          email: 1,
+          profileImage: 1,
+        },
+      },
+    ]);
+    const following: UserDto[] = this.queryArrayToUserDtoArray(followingQuery);
+    return following;
+  }
+
+  async getProfile(email: string): Promise<ProfileDto> {
+    const user = await this.findOneByEmail(email);
+    const follower = await this.getFollowers(user.username);
+    const playlist = await this.playlistsService.getPlaylistsInfo(user._id);
+
+    const profile: ProfileDto = {
+      followerCount: follower.length,
+      followingCount: user.following.length,
+      roles: user.roles,
+      profileImage: user.profileImage,
+      username: user.username,
+      playlistCount: playlist.length,
+    };
+    return profile;
+  }
+
+  async updateUsername(email: string, username: string): Promise<UserDto> {
+    const user = await this.findOneByEmail(email);
+    if (user.username === username) {
+      throw new ConflictException(`Username already exists`);
+    }
+    user.username = username;
+    const userDto: UserDto = {
+      username: user.username,
+      email: user.email,
+      profileImage: user.profileImage,
+    };
+
+    return userDto;
   }
 }
