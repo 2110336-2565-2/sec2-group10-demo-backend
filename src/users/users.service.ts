@@ -186,7 +186,7 @@ export class UsersService {
         `There isn't any user with username: ${username}`,
       );
     }
-    const followers = await this.userModel.aggregate([
+    const followersQuery = await this.userModel.aggregate([
       {
         $unwind: {
           path: '$following',
@@ -206,7 +206,21 @@ export class UsersService {
         },
       },
     ]);
+    const followers = this.queryArrayToUserDtoArray(followersQuery);
+
     return followers;
+  }
+  queryArrayToUserDtoArray(queryArray: any[]): UserDto[] {
+    const userDtoArray: UserDto[] = [];
+    for (const user of queryArray) {
+      const userDto: UserDto = {
+        username: user.username,
+        email: user.email,
+        profileImage: user.profileImage,
+      };
+      userDtoArray.push(userDto);
+    }
+    return userDtoArray;
   }
 
   async getFollowing(username: string): Promise<UserDto[]> {
@@ -216,7 +230,7 @@ export class UsersService {
         `There isn't any user with username: ${username}`,
       );
     }
-    const following = await this.userModel.aggregate([
+    const followingQuery = await this.userModel.aggregate([
       {
         $match: {
           _id: {
@@ -233,6 +247,7 @@ export class UsersService {
         },
       },
     ]);
+    const following: UserDto[] = this.queryArrayToUserDtoArray(followingQuery);
     return following;
   }
 
