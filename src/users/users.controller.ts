@@ -46,6 +46,7 @@ import {
 } from './dto/create-user.dto';
 import { ProfileDto } from './dto/profile.dto';
 import { UserDto } from './dto/user.dto';
+import { PlaylistsService } from './playlist/playlists.service';
 import { User } from './schema/users.schema';
 import { UsersService } from './users.service';
 
@@ -53,7 +54,10 @@ import { UsersService } from './users.service';
 @ApiBearerAuth()
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly playlistsService: PlaylistsService,
+  ) {}
 
   @Roles(Role.User)
   @ApiOkResponse({
@@ -186,7 +190,7 @@ export class UsersController {
   }
 
   //set role artist
-  @ApiBearerAuth()
+
   @ApiOkResponse({
     description: 'Success to upgrade to artist',
   })
@@ -201,7 +205,7 @@ export class UsersController {
   }
 
   //set role premium
-  @ApiBearerAuth()
+
   @ApiOkResponse({
     description: 'Success to upgrade to premium',
   })
@@ -210,13 +214,10 @@ export class UsersController {
   @HttpCode(HttpStatus.CONFLICT)
   @Put('role/premium')
   async upgradeToPremium(@Req() req, @Body() body: UpgradeToPremiumDto) {
-    // console.log(req);
     await this.usersService.setRoleUser(req.user.email, Role.Premium, body);
 
     return { message: 'success to upgrade to premium', success: true };
   }
-
-  //mock get profile
 
   @ApiOkResponse({
     description: 'Return user profile',
@@ -224,37 +225,19 @@ export class UsersController {
   @Get('profile/me')
   @HttpCode(HttpStatus.OK)
   async getMyProfile(@Req() req): Promise<ProfileDto> {
-    const user = await this.usersService.findOneByEmail(req.user.email);
-    const follower = await this.usersService.getFollowers(user.username);
-    const profile: ProfileDto = new ProfileDto();
-    profile.followerCount = follower.length;
-    profile.followingCount = user.following.length;
-    profile.playlistCount = 999;
-    profile.username = user.username;
-    profile.profileImage = user.profileImage;
-    profile.roles = user.roles;
-
+    const profile = await this.usersService.getProfile(req.user.email);
     return profile;
   }
 
   @Get('profile/:id')
   @ApiParam({ name: 'id' })
   @HttpCode(HttpStatus.OK)
-  async getUserProfile(@Req() req): Promise<ProfileDto> {
-    const user = await this.usersService.findOneById(req.params.id);
-    const follower = await this.usersService.getFollowers(user.username);
-    const profile: ProfileDto = new ProfileDto();
-    profile.followerCount = follower.length;
-    profile.followingCount = user.following.length;
-    profile.playlistCount = 999;
-    profile.username = user.username;
-    profile.profileImage = user.profileImage;
-    profile.roles = user.roles;
-
+  async getUserProfile(@Param() param): Promise<ProfileDto> {
+    const user = await this.usersService.findOneById(param.id);
+    const profile = await this.usersService.getProfile(user.email);
     return profile;
   }
 
-  @ApiBearerAuth()
   @ApiOkResponse({
     description: 'return role',
   })
@@ -265,7 +248,6 @@ export class UsersController {
     return user.roles;
   }
 
-  @ApiBearerAuth()
   @ApiParam({ name: 'followeeName' })
   @Put('follow/:followeeName')
   @HttpCode(HttpStatus.OK)
@@ -274,7 +256,6 @@ export class UsersController {
     return { message: 'success to follow user', success: true };
   }
 
-  @ApiBearerAuth()
   @ApiParam({ name: 'followeeName' })
   @Put('unfollow/:followeeName')
   @HttpCode(HttpStatus.OK)
@@ -283,7 +264,6 @@ export class UsersController {
     return { message: 'success to unfollow user', success: true };
   }
 
-  @ApiBearerAuth()
   @ApiParam({ name: 'followeeName' })
   @Get('follower/:followeeName')
   @HttpCode(HttpStatus.OK)
@@ -291,7 +271,6 @@ export class UsersController {
     return await this.usersService.getFollowers(params.followeeName);
   }
 
-  @ApiBearerAuth()
   @ApiParam({ name: 'followeeName' })
   @Get('following/:followeeName')
   @HttpCode(HttpStatus.OK)

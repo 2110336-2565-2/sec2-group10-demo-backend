@@ -3,7 +3,7 @@ import { Model } from 'mongoose';
 import * as mongoose from 'mongoose';
 import { Role } from 'src/common/enums/role';
 
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import {
   ConflictException,
   NotFoundException,
@@ -11,7 +11,9 @@ import {
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 
 import { CreateUserDto, UpdateUserDto } from './dto/create-user.dto';
+import { ProfileDto } from './dto/profile.dto';
 import { UserDto } from './dto/user.dto';
+import { PlaylistsService } from './playlist/playlists.service';
 import { User, UserDocument } from './schema/users.schema';
 
 @Injectable()
@@ -19,6 +21,8 @@ export class UsersService {
   constructor(
     @InjectConnection() private readonly connection: mongoose.Connection,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @Inject(PlaylistsService)
+    private readonly playlistsService: PlaylistsService,
   ) {}
 
   async create(
@@ -230,5 +234,21 @@ export class UsersService {
       },
     ]);
     return following;
+  }
+
+  async getProfile(email: string): Promise<ProfileDto> {
+    const user = await this.findOneByEmail(email);
+    const follower = await this.getFollowers(user.username);
+    const playlist = await this.playlistsService.getPlaylistsInfo(user._id);
+
+    const profile: ProfileDto = {
+      followerCount: follower.length,
+      followingCount: user.following.length,
+      roles: user.roles,
+      profileImage: user.profileImage,
+      username: user.username,
+      playlistCount: playlist.length,
+    };
+    return profile;
   }
 }
