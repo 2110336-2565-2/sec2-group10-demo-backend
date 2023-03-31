@@ -1,11 +1,4 @@
 import { Types } from 'mongoose';
-import MulterGoogleCloudStorage from 'multer-cloud-storage';
-import { FileMetadata } from 'src/cloudStorage/googleCloud.interface';
-import {
-  STORAGE_OPTIONS,
-  uploadLimits,
-  uploadMusicImageFilter,
-} from 'src/cloudStorage/googleCloud.utils';
 
 import * as Joi from '@hapi/joi';
 import {
@@ -18,14 +11,10 @@ import {
   Post,
   Query,
   Req,
-  UploadedFiles,
-  UseInterceptors,
 } from '@nestjs/common';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiBody,
-  ApiConsumes,
   ApiParam,
   ApiQuery,
   ApiResponse,
@@ -37,7 +26,10 @@ import { JoiValidationPipe } from '../../utils/joiValidation.pipe';
 import { UtilsService } from '../../utils/utils.service';
 import { CreatePlaylistDto } from '../dto/create-playlist.dto';
 import { EditPlaylistDto } from '../dto/edit-playlist.dto';
-import { FilterInputQueryDto } from './dto/isAlbum-input-dto';
+import {
+  FilterInputQueryDto,
+  GetPlaylistInputQueryDto,
+} from './dto/isAlbum-input-dto';
 import {
   AddMusicToPlaylistBodyDto,
   AddMusicToPlaylistResponseDto,
@@ -82,11 +74,35 @@ export class PlaylistsController {
   })
   async getPlaylists(
     @Query()
-    query: FilterInputQueryDto,
+    query: GetPlaylistInputQueryDto,
   ): Promise<GetPlaylistInfoResponseDto[]> {
     this.utilsService.validateMongoId(query.userId);
     return await this.playlistService.getPlaylistsInfo(
       new Types.ObjectId(query.userId),
+      query.filter,
+    );
+  }
+
+  @Get('all')
+  @ApiQuery({
+    name: 'filter',
+    required: false,
+    description: '"album" for albums, "playlist" for playlists, "all" for both',
+    type: String,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Return playlists',
+    type: [GetPlaylistInfoResponseDto],
+  })
+  async getMyPlaylists(
+    @Req() req,
+    @Query()
+    query: FilterInputQueryDto,
+  ): Promise<GetPlaylistInfoResponseDto[]> {
+    this.utilsService.validateMongoId(req.user.userId);
+    return await this.playlistService.getPlaylistsInfo(
+      req.user.userId,
       query.filter,
     );
   }
@@ -111,28 +127,16 @@ export class PlaylistsController {
   }
 
   @Post()
-  @ApiConsumes('multipart/form-data')
   @ApiResponse({
     status: 201,
     description: 'Return created playlist',
     type: CreatePlaylistResponseDto,
   })
-  @UseInterceptors(
-    FileFieldsInterceptor([{ name: 'coverImage', maxCount: 1 }], {
-      storage: new MulterGoogleCloudStorage(STORAGE_OPTIONS),
-      fileFilter: uploadMusicImageFilter,
-      limits: uploadLimits,
-    }),
-  )
-  async createPlaylist(
-    @Req() req,
-    @Body() body: CreatePlaylistDto,
-    @UploadedFiles() files: { coverImage: FileMetadata[] },
-  ) {
+  async createPlaylist(@Req() req, @Body() body: CreatePlaylistDto) {
     return await this.playlistService.createPlaylist(
       req.user.userId,
       body,
-      files.coverImage[0].linkUrl,
+      body.coverImage,
     );
   }
 
