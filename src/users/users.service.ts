@@ -273,6 +273,12 @@ export class UsersService {
       throw new ConflictException(`Username already exists`);
     }
     user.username = username;
-    return await this.update(user._id.toString(), user);
+    const userDto: UserDto = {
+      username: user.username,
+      email: user.email,
+      profileImage: user.profileImage,
+    };
+
+    return userDto;
   }
 }

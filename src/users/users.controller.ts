@@ -313,12 +313,18 @@ export class UsersController {
 
   @ApiOkResponse({
     description: 'Success to update username',
-    type: ResponseDto,
+    type: UserDto,
   })
   @ApiBody({ type: UpdateUsernameDto })
-  @Patch('username')
+  @Patch('profile')
   @HttpCode(HttpStatus.OK)
-  async updateMyUsername(@Req() req, @Body() body: UpdateUsernameDto) {
+  async updateMyUsername(
+    @Req() req,
+    @Body()
+    body: {
+      username?: string;
+    },
+  ) {
     const user = await this.usersService.updateUsername(
       req.user.email,
       body.username,
