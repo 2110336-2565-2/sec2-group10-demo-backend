@@ -37,7 +37,10 @@ import { JoiValidationPipe } from '../../utils/joiValidation.pipe';
 import { UtilsService } from '../../utils/utils.service';
 import { CreatePlaylistDto } from '../dto/create-playlist.dto';
 import { EditPlaylistDto } from '../dto/edit-playlist.dto';
-import { FilterInputQueryDto } from './dto/isAlbum-input-dto';
+import {
+  FilterInputQueryDto,
+  GetPlaylistInputQueryDto,
+} from './dto/isAlbum-input-dto';
 import {
   AddMusicToPlaylistBodyDto,
   AddMusicToPlaylistResponseDto,
@@ -82,11 +85,35 @@ export class PlaylistsController {
   })
   async getPlaylists(
     @Query()
-    query: FilterInputQueryDto,
+    query: GetPlaylistInputQueryDto,
   ): Promise<GetPlaylistInfoResponseDto[]> {
     this.utilsService.validateMongoId(query.userId);
     return await this.playlistService.getPlaylistsInfo(
       new Types.ObjectId(query.userId),
+      query.filter,
+    );
+  }
+
+  @Get('all')
+  @ApiQuery({
+    name: 'filter',
+    required: false,
+    description: '"album" for albums, "playlist" for playlists, "all" for both',
+    type: String,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Return playlists',
+    type: [GetPlaylistInfoResponseDto],
+  })
+  async getMyPlaylists(
+    @Req() req,
+    @Query()
+    query: FilterInputQueryDto,
+  ): Promise<GetPlaylistInfoResponseDto[]> {
+    this.utilsService.validateMongoId(req.user.userId);
+    return await this.playlistService.getPlaylistsInfo(
+      req.user.userId,
       query.filter,
     );
   }
