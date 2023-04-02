@@ -22,16 +22,19 @@ export class MusicsService {
   ) {}
 
   async getMusic(id: string) {
-    const dumpUrl =
-      'https://www.soundboard.com/handler/DownLoadTrack.ashx?cliptitle=Never+Gonna+Give+You+Up-+Original&filename=mz/Mzg1ODMxNTIzMzg1ODM3_JzthsfvUY24.MP3';
-    return {
-      name: 'Dump Music',
-      url: dumpUrl,
-      descrpition: 'Dump music for testing API',
-      artist: 'Dump Man',
-      coverImage:
-        'https://www.pngmart.com/files/11/Frog-Meme-PNG-Transparent.png',
-    };
+    if (!mongoose.isValidObjectId(id))
+      throw new BadRequestException('invalid Music Id');
+    const music = this.musicModel.findById(new Types.ObjectId(id));
+    if (!music) throw new BadRequestException('music not found');
+    return music;
+  }
+
+  async getMusics(genre: string = '') {
+    let filter = {};
+    if (genre !== '')
+      Object.assign(filter, { genre: { $all: genre.split(',') } });
+    const musics = this.musicModel.find(filter);
+    return musics;
   }
 
   async uploadMusic(
@@ -55,6 +58,7 @@ export class MusicsService {
       const album = await this.playlistsService.getPlaylistInfo(
         new Types.ObjectId(uploadMusicDto.albumId),
       );
+      if (album.isAlbum === false) throw new BadRequestException();
     } catch (err) {
       throw new BadRequestException('Album not found');
     }

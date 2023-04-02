@@ -1,13 +1,14 @@
-import MulterGoogleCloudStorage from "multer-cloud-storage";
-import { FileMetadata } from "src/cloudStorage/googleCloud.interface";
+import MulterGoogleCloudStorage from 'multer-cloud-storage';
+import { FileMetadata } from 'src/cloudStorage/googleCloud.interface';
 import {
   STORAGE_OPTIONS,
   uploadLimits,
-  uploadMusicImageFilter
-} from "src/cloudStorage/googleCloud.utils";
-import { JoiValidationPipe } from "src/utils/joiValidation.pipe";
+  uploadMusicImageFilter,
+} from 'src/cloudStorage/googleCloud.utils';
+import { Genre } from 'src/constants/music';
+import { JoiValidationPipe } from 'src/utils/joiValidation.pipe';
 
-import * as Joi from "@hapi/joi";
+import * as Joi from '@hapi/joi';
 import {
   Body,
   Controller,
@@ -16,58 +17,88 @@ import {
   Post,
   Request,
   UploadedFiles,
-  UseInterceptors
-} from "@nestjs/common";
-import { FileFieldsInterceptor } from "@nestjs/platform-express";
+  UseInterceptors,
+} from '@nestjs/common';
+import { Query } from '@nestjs/common/decorators';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiBody,
   ApiConsumes,
   ApiParam,
+  ApiQuery,
   ApiResponse,
-  ApiTags
-} from "@nestjs/swagger";
+  ApiTags,
+} from '@nestjs/swagger';
 
-import { Public } from "../../auth/public_decorator";
-import { UploadMusicDto } from "../dto/upload-music.dto";
-import { Music } from "../schema/music.schema";
-import { GetMusicsResponseDto } from "./dto/get-musics-response.dto";
-import { MusicsService } from "./musics.service";
+import { Public } from '../../auth/public_decorator';
+import { UploadMusicDto } from '../dto/upload-music.dto';
+import { Music } from '../schema/music.schema';
+import { GetMusicsResponseDto } from './dto/get-musics-response.dto';
+import { MusicsService } from './musics.service';
 
 @ApiBearerAuth()
 @ApiTags('users/musics')
 @Controller('users/musics')
 export class MusicsController {
   constructor(private readonly musicsService: MusicsService) {}
-
-  @Get('/:id')
+  @Public()
+  @Get('/availableGenre')
   @ApiResponse({
     status: 200,
-    description: 'Return music information',
-    schema: {
-      type: 'object',
-      properties: {
-        name: { type: 'string', example: 'Shave of You' },
-        url: {
-          type: 'string',
-          example: 'www.demomusic.com/music/shaveofu.mp3',
-        },
-        description: { type: 'string', example: 'Cool music by Ed She Run' },
-        artist: { type: 'string', example: 'Ed She Run' },
-        coverImage: {
-          type: 'string',
-          example:
-            'https://w7.pngwing.com/pngs/802/825/png-transparent-redbubble-polite-cat-meme-funny-cat-meme.png',
-        },
-      },
-    },
+    description: 'Return list of available genre',
+    type: [String],
   })
-  async getMusic(
-    @Param('id', new JoiValidationPipe(Joi.string().required()))
-    id: string,
-  ) {
-    return await this.musicsService.getMusic(id);
+  async getGenres(): Promise<string[]> {
+    return Object.values(Genre);
   }
+
+  @Public()
+  @Get('')
+  @ApiQuery({
+    name: 'genre',
+    description: 'Genre names, seperated by ","',
+    type: String,
+    required: false,
+    example: 'Pop,Hip-Hip',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Return list of filtered music',
+    type: [Music],
+  })
+  async getMusics(@Query('genre') genre: string): Promise<Music[]> {
+    return await this.musicsService.getMusics(genre);
+  }
+
+  // @Get('/:id')
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'Return music information',
+  //   schema: {
+  //     type: 'object',
+  //     properties: {
+  //       name: { type: 'string', example: 'Shave of You' },
+  //       url: {
+  //         type: 'string',
+  //         example: 'www.demomusic.com/music/shaveofu.mp3',
+  //       },
+  //       description: { type: 'string', example: 'Cool music by Ed She Run' },
+  //       artist: { type: 'string', example: 'Ed She Run' },
+  //       coverImage: {
+  //         type: 'string',
+  //         example:
+  //           'https://w7.pngwing.com/pngs/802/825/png-transparent-redbubble-polite-cat-meme-funny-cat-meme.png',
+  //       },
+  //     },
+  //   },
+  // })
+  // async getMusic(
+  //   @Param('id', new JoiValidationPipe(Joi.string().required()))
+  //   id: string,
+  // ) {
+  //   return await this.musicsService.getMusic(id);
+  // }
 
   @Post('')
   @UseInterceptors(
@@ -106,6 +137,10 @@ export class MusicsController {
         },
         coverImage: {
           type: 'file',
+        },
+        genre: {
+          type: 'array',
+          example: ['Pop', 'Hip-Hop'],
         },
       },
     },

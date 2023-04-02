@@ -1,0 +1,39 @@
+steps:
+  # Set up env
+  - name: node
+    entrypoint: npm
+    args: ['install']
+  - name: node
+    entrypoint: npm
+    args: ['run', 'create-env']
+    env:
+      - 'DATABASE_URI=${_DATABASE_URI}'
+      - 'DATABASE_NAME=${_DATABASE_NAME}'
+  # Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      [
+        'build',
+        '-t',
+        'gcr.io/$PROJECT_ID/sec2-group10-demo-backend:$COMMIT_SHA',
+        '.',
+      ]
+  # Push the container image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/sec2-group10-demo-backend:$COMMIT_SHA']
+  # Deploy container image to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'sec2-group10-demo-backend'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/sec2-group10-demo-backend:$COMMIT_SHA'
+      - '--region'
+      - 'asia-southeast1'
+      - '--vpc-connector'
+      - 'static-ip-connector'
+images:
+  - 'gcr.io/$PROJECT_ID/sec2-group10-demo-backend:$COMMIT_SHA'
+timeout: 720s
