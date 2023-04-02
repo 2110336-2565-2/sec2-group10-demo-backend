@@ -4,6 +4,10 @@ import { Role } from 'src/common/enums/role';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ProfileDto {
+  @ApiProperty({ example: '5ff4c9d8e4b0f8b8b8b8b8b8' })
+  @IsString()
+  _id: string;
+
   @ApiProperty({ example: 50 })
   @IsNumber()
   followerCount: number;

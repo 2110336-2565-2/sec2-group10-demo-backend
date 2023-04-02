@@ -256,6 +256,7 @@ export class UsersService {
     const playlist = await this.playlistsService.getPlaylistsInfo(user._id);
 
     const profile: ProfileDto = {
+      _id: user._id.toString(),
       followerCount: follower.length,
       followingCount: user.following.length,
       roles: user.roles,
