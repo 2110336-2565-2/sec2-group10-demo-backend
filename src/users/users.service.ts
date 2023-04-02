@@ -2,6 +2,7 @@ import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
 import * as mongoose from 'mongoose';
 import { Role } from 'src/common/enums/role';
+import { profilePlaceHolder } from 'src/constants/placeHolder';
 
 import { Inject, Injectable } from '@nestjs/common';
 import {
@@ -25,10 +26,7 @@ export class UsersService {
     private readonly playlistsService: PlaylistsService,
   ) {}
 
-  async create(
-    createUserDto: CreateUserDto,
-    profileImage: string,
-  ): Promise<CreateUserDto> {
+  async create(createUserDto: CreateUserDto): Promise<CreateUserDto> {
     // Set email to lowercase
     createUserDto.email = createUserDto.email.toLowerCase();
 
@@ -49,7 +47,10 @@ export class UsersService {
     // Attach username to createUserDto
     Object.assign(createUserDto, {
       username: createUserDto.email,
-      profileImage: profileImage,
+      accountNumber:
+        (await this.userModel.find().sort({ accountNumber: -1 }).limit(1))[0]
+          .accountNumber + 1,
+      profileImage: profilePlaceHolder,
     });
 
     const createdUser = new this.userModel(createUserDto);

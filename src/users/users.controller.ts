@@ -1,22 +1,10 @@
 import { Response } from 'express';
-import MulterGoogleCloudStorage from 'multer-cloud-storage';
 import { type } from 'os';
-import { FileMetadata } from 'src/cloudStorage/googleCloud.interface';
-import {
-  STORAGE_OPTIONS,
-  uploadLimits,
-  uploadMusicImageFilter,
-} from 'src/cloudStorage/googleCloud.utils';
 import { Role } from 'src/common/enums/role';
+import { profilePlaceHolder } from 'src/constants/placeHolder';
 import { Roles } from 'src/roles/roles.decorator';
 
-import {
-  Controller,
-  Param,
-  Post,
-  UploadedFiles,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Controller, Param, Post } from '@nestjs/common';
 import { Body, HttpCode, Req, Res } from '@nestjs/common/decorators';
 import {
   Delete,
@@ -25,7 +13,6 @@ import {
   Put,
 } from '@nestjs/common/decorators/http/request-mapping.decorator';
 import { HttpStatus } from '@nestjs/common/enums';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -108,31 +95,19 @@ export class UsersController {
   @ApiConflictResponse({
     description: 'Email already exists',
   })
-  @UseInterceptors(
-    FileFieldsInterceptor([{ name: 'profileImage', maxCount: 1 }], {
-      storage: new MulterGoogleCloudStorage(STORAGE_OPTIONS),
-      fileFilter: uploadMusicImageFilter,
-      limits: uploadLimits,
-    }),
-  )
   @Public()
   @HttpCode(HttpStatus.CREATED)
   @HttpCode(HttpStatus.NOT_FOUND)
   @HttpCode(HttpStatus.CONFLICT)
   async registerUser(
     @Body() createUserDto: CreateUserDto,
-    @UploadedFiles()
-    files: { profileImage: FileMetadata[] },
     @Res() res: Response,
   ): Promise<Response> {
-    const user = await this.usersService.create(
-      createUserDto,
-      files.profileImage[0].linkUrl,
-    );
+    const user = await this.usersService.create(createUserDto);
     return res.json({
       email: user.email,
       message: 'User created successfully',
-      profileImage: files.profileImage[0].linkUrl,
+      profileImage: profilePlaceHolder,
     });
   }
 
