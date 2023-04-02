@@ -148,6 +148,7 @@ export class MusicsService {
           ownerName: { $arrayElemAt: ['$owner.username', 0] },
           duration: 1,
           url: 1,
+          genre: 1,
         },
       },
     ]);
@@ -164,6 +165,7 @@ export class MusicsService {
         ownerName: music.ownerName,
         duration: music.duration,
         url: music.url,
+        genre: music.genre,
       });
     }
 
