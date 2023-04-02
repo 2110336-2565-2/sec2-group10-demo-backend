@@ -132,47 +132,47 @@ export class UsersService {
     return await this.update(user._id.toString(), user);
   }
 
-  async followArtist(
-    followerEmail: string,
-    followeeName: string,
-  ): Promise<any> {
+  async followArtist(followerEmail: string, id: string): Promise<any> {
     const follower = await this.findOneByEmail(followerEmail);
-    const followee = await this.findOneByUsername(followeeName);
+    const followee = await this.findOneById(id);
 
     if (!followee) {
-      throw new NotFoundException(
-        `There isn't any user with username: ${followeeName}`,
-      );
+      throw new NotFoundException(`There isn't any user with id: ${id}`);
     }
+    if (follower._id.toString() === followee._id.toString()) {
+      throw new ConflictException(`User can't follow himself`);
+    }
+
     if (!followee.roles.includes(Role.Artist)) {
-      throw new ConflictException(`${followeeName} is not an artist`);
+      throw new ConflictException(`${followee.username} is not an artist`);
     }
+
     if (follower.following.includes(followee._id)) {
-      throw new ConflictException(`User already follows ${followeeName}`);
+      throw new ConflictException(`User already follows ${followee.username}`);
     }
+
     follower.following.push(followee._id);
 
     await this.update(follower._id.toString(), follower);
   }
 
-  async unfollowArtist(
-    followerEmail: string,
-    followeeName: string,
-  ): Promise<any> {
+  async unfollowArtist(followerEmail: string, id: string): Promise<any> {
     const follower = await this.findOneByEmail(followerEmail);
-    const followee = await this.findOneByUsername(followeeName);
+    const followee = await this.findOneById(id);
 
     if (!followee) {
-      throw new NotFoundException(
-        `There isn't any user with username: ${followeeName}`,
-      );
+      throw new NotFoundException(`There isn't any user with id: ${id}`);
+    }
+    if (follower._id.toString() === followee._id.toString()) {
+      throw new ConflictException(`User can't unfollow himself`);
     }
     if (!followee.roles.includes(Role.Artist)) {
-      throw new ConflictException(`${followeeName} is not an artist`);
+      throw new ConflictException(`${followee.username} is not an artist`);
     }
     if (!follower.following.includes(followee._id)) {
-      throw new ConflictException(`User doesn't follow ${followeeName}`);
+      throw new ConflictException(`User doesn't follow ${followee.username}`);
     }
+
     follower.following = follower.following.filter(
       (id) => id.toString() !== followee._id.toString(),
     );
@@ -180,12 +180,10 @@ export class UsersService {
     await this.update(follower._id.toString(), follower);
   }
 
-  async getFollowers(username: string): Promise<UserDto[]> {
-    const user = await this.findOneByUsername(username);
+  async getFollowers(id: string): Promise<UserDto[]> {
+    const user = await this.findOneById(id);
     if (!user) {
-      throw new NotFoundException(
-        `There isn't any user with username: ${username}`,
-      );
+      throw new NotFoundException(`There isn't any user with id: ${id}`);
     }
     const followersQuery = await this.userModel.aggregate([
       {
@@ -224,12 +222,10 @@ export class UsersService {
     return userDtoArray;
   }
 
-  async getFollowing(username: string): Promise<UserDto[]> {
-    const user = await this.findOneByUsername(username);
+  async getFollowing(id: string): Promise<UserDto[]> {
+    const user = await this.findOneById(id);
     if (!user) {
-      throw new NotFoundException(
-        `There isn't any user with username: ${username}`,
-      );
+      throw new NotFoundException(`There isn't any user with id: ${id}`);
     }
     const followingQuery = await this.userModel.aggregate([
       {
@@ -254,7 +250,9 @@ export class UsersService {
 
   async getProfile(email: string): Promise<ProfileDto> {
     const user = await this.findOneByEmail(email);
-    const follower = await this.getFollowers(user.username);
+
+    const follower = await this.getFollowers(user._id.toString());
+
     const playlist = await this.playlistsService.getPlaylistsInfo(user._id);
 
     const profile: ProfileDto = {
