@@ -1,4 +1,4 @@
-import { BadRequestException } from "@nestjs/common";
+import { BadRequestException } from '@nestjs/common';
 
 export const uploadMusicImageFilter = (req, file, callback) => {
   // check if file format is correct
