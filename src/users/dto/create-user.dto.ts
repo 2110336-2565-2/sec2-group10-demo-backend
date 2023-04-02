@@ -1,6 +1,6 @@
-import { IsEmail, IsNotEmpty, IsString } from "class-validator";
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto {
   @ApiProperty({ example: 'password' })
@@ -12,14 +12,6 @@ export class CreateUserDto {
   @IsNotEmpty()
   @IsEmail()
   email: string;
-
-  @ApiProperty({
-    type: 'string',
-    format: 'binary',
-    required: true,
-    description: 'please upload image file in this field',
-  })
-  profileImage: any;
 }
 
 export class UpdateUserDto extends CreateUserDto {

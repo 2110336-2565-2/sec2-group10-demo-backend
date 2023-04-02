@@ -4,7 +4,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
 import { Role } from '../../common/enums/role';
-import { GetUsersInfoResponseDto } from '../dto/get-users.dto';
+import { Genre } from '../../constants/music';
+import { GetArtistsInfoResponseDto } from '../dto/get-users.dto';
 import { GetMusicsResponseDto } from '../music/dto/get-musics-response.dto';
 import { GetPlaylistInfoResponseDto } from '../playlist/dto/playlist-response.dto';
 import { Music, MusicDocument } from '../schema/music.schema';
@@ -20,24 +21,79 @@ export class SearchService {
   ) {}
 
   async searchMusics(term: string, limit = 5): Promise<GetMusicsResponseDto[]> {
-    const musics = await this.musicModel
+    const genre = this.extractGenre(term);
+    const musics_by_genre = await this.musicModel
+      .find({
+        genre: { $all: genre },
+      })
+      .populate('albumId', { name: 1 })
+      .populate('ownerId', { username: 1 })
+      .limit(limit);
+
+    const musics_by_name = await this.musicModel
       .find({ name: { $regex: term, $options: 'i' } })
       .populate('albumId', { name: 1 })
       .populate('ownerId', { username: 1 })
       .limit(limit);
     const res: GetMusicsResponseDto[] = [];
-    for (const music of musics as any) {
-      res.push({
-        musicId: music._id.toString(),
-        name: music.name,
-        coverImage: music.coverImage,
-        ownerId: music.ownerId ? music.ownerId._id : '',
-        ownerName: music.ownerId ? music.ownerId.username : '',
-        albumId: music.albumId ? music.albumId._id : '',
-        albumName: music.albumId ? music.albumId.name : '',
-        duration: music.duration,
-        url: music.url,
-      });
+    let j = 0;
+    while (
+      res.length < limit - Math.floor(limit / 4) &&
+      j < musics_by_name.length
+    ) {
+      const music = musics_by_name[j] as any;
+      if (!res.find((m) => m.musicId === music._id.toString())) {
+        res.push({
+          musicId: music._id.toString(),
+          name: music.name,
+          coverImage: music.coverImage,
+          ownerId: music.ownerId ? music.ownerId._id : '',
+          ownerName: music.ownerId ? music.ownerId.username : '',
+          albumId: music.albumId ? music.albumId._id : '',
+          albumName: music.albumId ? music.albumId.name : '',
+          duration: music.duration,
+          url: music.url,
+          genre: music.genre,
+        });
+      }
+      j++;
+    }
+    let i = 0;
+    while (res.length < limit && i < musics_by_genre.length) {
+      const music = musics_by_genre[i] as any;
+      if (!res.find((m) => m.musicId === music._id.toString())) {
+        res.push({
+          musicId: music._id.toString(),
+          name: music.name,
+          coverImage: music.coverImage,
+          ownerId: music.ownerId ? music.ownerId._id : '',
+          ownerName: music.ownerId ? music.ownerId.username : '',
+          albumId: music.albumId ? music.albumId._id : '',
+          albumName: music.albumId ? music.albumId.name : '',
+          duration: music.duration,
+          url: music.url,
+          genre: music.genre,
+        });
+      }
+      i++;
+    }
+    while (res.length < limit && j < musics_by_name.length) {
+      const music = musics_by_name[j] as any;
+      if (!res.find((m) => m.musicId === music._id.toString())) {
+        res.push({
+          musicId: music._id.toString(),
+          name: music.name,
+          coverImage: music.coverImage,
+          ownerId: music.ownerId ? music.ownerId._id : '',
+          ownerName: music.ownerId ? music.ownerId.username : '',
+          albumId: music.albumId ? music.albumId._id : '',
+          albumName: music.albumId ? music.albumId.name : '',
+          duration: music.duration,
+          url: music.url,
+          genre: music.genre,
+        });
+      }
+      j++;
     }
     return res;
   }
@@ -68,7 +124,7 @@ export class SearchService {
   async searchArtists(
     term: string,
     limit = 5,
-  ): Promise<GetUsersInfoResponseDto[]> {
+  ): Promise<GetArtistsInfoResponseDto[]> {
     const artists = await this.userModel
       .find({
         roles: { $elemMatch: { $eq: Role.Artist } },
@@ -76,10 +132,29 @@ export class SearchService {
       })
       .limit(limit);
 
-    const res: GetUsersInfoResponseDto[] = [];
+    const res: GetArtistsInfoResponseDto[] = [];
     for (const artist of artists) {
-      res.push(artist);
+      let temp: GetArtistsInfoResponseDto = {
+        _id: artist._id,
+        username: artist.username,
+        email: artist.email,
+        registrationDate: artist.registrationDate,
+        roles: artist.roles,
+        profileImage: artist.profileImage,
+        accountNumber: artist.accountNumber,
+      };
+      res.push(temp);
     }
     return res;
+  }
+
+  extractGenre(term: string): Genre[] {
+    const genres: Genre[] = [];
+    for (const genre of Object.values(Genre)) {
+      if (term.toLowerCase().includes(genre.toLowerCase())) {
+        genres.push(genre);
+      }
+    }
+    return genres;
   }
 }
