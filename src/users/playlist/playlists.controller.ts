@@ -133,11 +133,7 @@ export class PlaylistsController {
     type: CreatePlaylistResponseDto,
   })
   async createPlaylist(@Req() req, @Body() body: CreatePlaylistDto) {
-    return await this.playlistService.createPlaylist(
-      req.user.userId,
-      body,
-      body.coverImage,
-    );
+    return await this.playlistService.createPlaylist(req.user.userId, body);
   }
 
   @Patch(':id')

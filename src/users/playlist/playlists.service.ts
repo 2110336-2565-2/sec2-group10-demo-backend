@@ -1,9 +1,15 @@
 import { Model, Types } from 'mongoose';
+import { Role } from 'src/common/enums/role';
+import {
+  albumPlaceHolder,
+  playlistPlaceHolder,
+} from 'src/constants/placeHolder';
 
 import {
   ForbiddenException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
@@ -14,6 +20,7 @@ import {
   PlaylistDocument,
   PlaylistType,
 } from '../schema/playlist.schema';
+import { User, UserDocument } from '../schema/users.schema';
 import {
   AddMusicToPlaylistResponseDto,
   MusicsInPlaylistResponseDto,
@@ -30,6 +37,7 @@ import {
 export class PlaylistsService {
   constructor(
     @InjectModel(Playlist.name) private playlistModel: Model<PlaylistDocument>,
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
   ) {}
 
   async getPlaylistInfo(
@@ -112,12 +120,18 @@ export class PlaylistsService {
   async createPlaylist(
     userId: Types.ObjectId,
     createPlaylistDto: CreatePlaylistDto,
-    coverImage: string,
   ): Promise<CreatePlaylistResponseDto> {
     Object.assign(createPlaylistDto, {
       userId: userId,
-      coverImage: coverImage,
+      coverImage: createPlaylistDto.isAlbum
+        ? albumPlaceHolder
+        : playlistPlaceHolder,
     });
+
+    const user = await this.userModel.findById(userId);
+    if (createPlaylistDto.isAlbum && !user.roles.includes(Role.Artist)) {
+      throw new UnauthorizedException('Only artist are allow to create album');
+    }
 
     const playlist = new this.playlistModel(createPlaylistDto);
     const createdPlaylist = await playlist.save();

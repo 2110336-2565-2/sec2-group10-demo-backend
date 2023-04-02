@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
+import { IsNotEmpty, IsOptional, Matches } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -28,9 +28,4 @@ export class CreatePlaylistDto {
   //   description: 'please upload image file in this field',
   // })
   // coverImage: any;
-
-  @ApiProperty({ example: 'https://i.imgur.com/1J2h9YR.jpg' })
-  @IsNotEmpty()
-  @IsString()
-  coverImage: string;
 }
