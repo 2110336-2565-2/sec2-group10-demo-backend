@@ -278,7 +278,7 @@ export class UsersService {
       email: user.email,
       profileImage: user.profileImage,
     };
-
+    await this.update(user._id.toString(), user);
     return userDto;
   }
 }
