@@ -6,6 +6,7 @@ import { profilePlaceHolder } from 'src/constants/placeHolder';
 
 import { Inject, Injectable } from '@nestjs/common';
 import {
+  BadRequestException,
   ConflictException,
   NotFoundException,
 } from '@nestjs/common/exceptions';
@@ -277,6 +278,24 @@ export class UsersService {
       username: user.username,
       email: user.email,
       profileImage: user.profileImage,
+    };
+    await this.update(user._id.toString(), user);
+    return userDto;
+  }
+
+  async updateProfileImage(
+    userId: mongoose.Types.ObjectId,
+    profileImage: string,
+  ): Promise<UserDto> {
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    const userDto: UserDto = {
+      username: user.username,
+      email: user.email,
+      profileImage: profileImage,
     };
     await this.update(user._id.toString(), user);
     return userDto;

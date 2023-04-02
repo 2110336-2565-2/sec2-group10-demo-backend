@@ -1,11 +1,25 @@
 import { Response } from 'express';
+import MulterGoogleCloudStorage from 'multer-cloud-storage';
 import { type } from 'os';
+import { FileMetadata } from 'src/cloudStorage/googleCloud.interface';
+import {
+  STORAGE_OPTIONS,
+  uploadLimits,
+  uploadMusicImageFilter,
+} from 'src/cloudStorage/googleCloud.utils';
 import { Role } from 'src/common/enums/role';
 import { profilePlaceHolder } from 'src/constants/placeHolder';
 import { Roles } from 'src/roles/roles.decorator';
 
 import { Controller, Param, Post } from '@nestjs/common';
-import { Body, HttpCode, Req, Res } from '@nestjs/common/decorators';
+import {
+  Body,
+  HttpCode,
+  Req,
+  Res,
+  UploadedFiles,
+  UseInterceptors,
+} from '@nestjs/common/decorators';
 import {
   Delete,
   Get,
@@ -13,6 +27,7 @@ import {
   Put,
 } from '@nestjs/common/decorators/http/request-mapping.decorator';
 import { HttpStatus } from '@nestjs/common/enums';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -35,6 +50,7 @@ import {
 } from './dto/create-user.dto';
 import { ProfileDto } from './dto/profile.dto';
 import { ResponseDto } from './dto/response.dto';
+import { UpdateProfileImageDto } from './dto/update-profile-image.dto';
 import { UpdateUsernameDto } from './dto/update-username.dto';
 import { UserDto } from './dto/user.dto';
 import { PlaylistsService } from './playlist/playlists.service';
@@ -303,6 +319,33 @@ export class UsersController {
     const user = await this.usersService.updateUsername(
       req.user.email,
       body.username,
+    );
+
+    return user;
+  }
+
+  @ApiOkResponse({
+    description: 'Success to update username',
+    type: UserDto,
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: UpdateProfileImageDto })
+  @Patch('profile/image')
+  @HttpCode(HttpStatus.OK)
+  @UseInterceptors(
+    FileFieldsInterceptor([{ name: 'profileImage', maxCount: 1 }], {
+      storage: new MulterGoogleCloudStorage(STORAGE_OPTIONS),
+      fileFilter: uploadMusicImageFilter,
+      limits: uploadLimits,
+    }),
+  )
+  async updateProfileImage(
+    @Req() req,
+    @UploadedFiles() files: { profileImage: FileMetadata[] },
+  ) {
+    const user = await this.usersService.updateProfileImage(
+      req.user.userId,
+      files.profileImage[0].linkUrl,
     );
 
     return user;

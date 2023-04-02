@@ -1,4 +1,11 @@
 import { Types } from 'mongoose';
+import MulterGoogleCloudStorage from 'multer-cloud-storage';
+import { FileMetadata } from 'src/cloudStorage/googleCloud.interface';
+import {
+  STORAGE_OPTIONS,
+  uploadLimits,
+  uploadMusicImageFilter,
+} from 'src/cloudStorage/googleCloud.utils';
 
 import * as Joi from '@hapi/joi';
 import {
@@ -11,10 +18,14 @@ import {
   Post,
   Query,
   Req,
+  UploadedFiles,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiBody,
+  ApiConsumes,
   ApiParam,
   ApiQuery,
   ApiResponse,
@@ -26,6 +37,7 @@ import { JoiValidationPipe } from '../../utils/joiValidation.pipe';
 import { UtilsService } from '../../utils/utils.service';
 import { CreatePlaylistDto } from '../dto/create-playlist.dto';
 import { EditPlaylistDto } from '../dto/edit-playlist.dto';
+import { UpdatePlaylistImageDto } from '../dto/update-playlist-image.dto.';
 import {
   FilterInputQueryDto,
   GetPlaylistInputQueryDto,
@@ -134,6 +146,34 @@ export class PlaylistsController {
   })
   async createPlaylist(@Req() req, @Body() body: CreatePlaylistDto) {
     return await this.playlistService.createPlaylist(req.user.userId, body);
+  }
+  @Patch('image')
+  @ApiResponse({
+    status: 201,
+    description: 'Return created playlist',
+    type: CreatePlaylistResponseDto,
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: UpdatePlaylistImageDto })
+  @UseInterceptors(
+    FileFieldsInterceptor([{ name: 'coverImage', maxCount: 1 }], {
+      storage: new MulterGoogleCloudStorage(STORAGE_OPTIONS),
+      fileFilter: uploadMusicImageFilter,
+      limits: uploadLimits,
+    }),
+  )
+  async updateCoverImage(
+    @Req() req,
+    @UploadedFiles() files: { coverImage: FileMetadata[] },
+    @Body() updatePlaylistImageDto: UpdatePlaylistImageDto,
+  ) {
+    const playlist = await this.playlistService.updateCoverImage(
+      req.user.userId,
+      new Types.ObjectId(updatePlaylistImageDto.playlistId),
+      files.coverImage[0].linkUrl,
+    );
+
+    return playlist;
   }
 
   @Patch(':id')
