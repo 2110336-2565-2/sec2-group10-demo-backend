@@ -146,16 +146,16 @@ export class UsersController {
     return this.usersService.update(params.id, user);
   }
 
-  @ApiParam({ name: 'username' })
-  @ApiOkResponse({
-    description: 'Return user',
-    type: User,
-  })
-  @Get('user/:username')
-  @HttpCode(HttpStatus.OK)
-  async findByUsername(@Param() params) {
-    return this.usersService.findOneByUsername(params.username);
-  }
+  // @ApiParam({ name: 'username' })
+  // @ApiOkResponse({
+  //   description: 'Return user',
+  //   type: User,
+  // })
+  // @Get('user/:username')
+  // @HttpCode(HttpStatus.OK)
+  // async findByUsername(@Param() params) {
+  //   return this.usersService.findOneByUsername(params.username);
+  // }
 
   @ApiParam({ name: 'email' })
   @ApiOkResponse({
@@ -236,11 +236,11 @@ export class UsersController {
     description: 'Success to follow user',
     type: ResponseDto,
   })
-  @ApiParam({ name: 'followeeName' })
-  @Put('follow/:followeeName')
+  @ApiParam({ name: 'id' })
+  @Put('follow/:id')
   @HttpCode(HttpStatus.OK)
   async followArtist(@Req() req, @Param() params) {
-    await this.usersService.followArtist(req.user.email, params.followeeName);
+    await this.usersService.followArtist(req.user.email, params.id);
     const response: ResponseDto = {
       message: 'success to follow user',
       success: true,
@@ -252,11 +252,11 @@ export class UsersController {
     description: 'Success to unfollow user',
     type: ResponseDto,
   })
-  @ApiParam({ name: 'followeeName' })
-  @Put('unfollow/:followeeName')
+  @ApiParam({ name: 'id' })
+  @Put('unfollow/:id')
   @HttpCode(HttpStatus.OK)
   async unfollowArtist(@Req() req, @Param() params) {
-    await this.usersService.unfollowArtist(req.user.email, params.followeeName);
+    await this.usersService.unfollowArtist(req.user.email, params.id);
     const response: ResponseDto = {
       message: 'success to unfollow user',
       success: true,
@@ -268,22 +268,22 @@ export class UsersController {
     description: 'Return list of followers',
     type: [UserDto],
   })
-  @ApiParam({ name: 'followeeName' })
-  @Get('follower/:followeeName')
+  @ApiParam({ name: 'id' })
+  @Get('follower/:id')
   @HttpCode(HttpStatus.OK)
   async getFollowers(@Param() params) {
-    return await this.usersService.getFollowers(params.followeeName);
+    return await this.usersService.getFollowers(params.id);
   }
 
   @ApiOkResponse({
     description: 'Return list of following',
     type: [UserDto],
   })
-  @ApiParam({ name: 'followeeName' })
-  @Get('following/:followeeName')
+  @ApiParam({ name: 'id' })
+  @Get('following/:id')
   @HttpCode(HttpStatus.OK)
   async getFollowing(@Param() params) {
-    return await this.usersService.getFollowing(params.followeeName);
+    return await this.usersService.getFollowing(params.id);
   }
 
   @ApiOkResponse({
