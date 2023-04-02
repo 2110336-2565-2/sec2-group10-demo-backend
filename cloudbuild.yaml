@@ -39,6 +39,6 @@ steps:
       - 'asia-east1'
 images:
   - 'gcr.io/$PROJECT_ID/sec2-group10-demo-backend:$COMMIT_SHA'
-timeout: 720s
+timeout: 1500s
 options:
   logging: CLOUD_LOGGING_ONLY
