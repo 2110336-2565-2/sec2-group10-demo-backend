@@ -6,6 +6,7 @@ import {
 } from 'src/constants/placeHolder';
 
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -360,5 +361,26 @@ export class PlaylistsService {
     };
 
     return res;
+  }
+
+  async updateCoverImage(
+    userId: Types.ObjectId,
+    playlistId: Types.ObjectId,
+    coverImage: string,
+  ): Promise<CreatePlaylistResponseDto> {
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    const playlist = await this.playlistModel.findById(playlistId);
+    if (!playlist.userId.equals(userId))
+      throw new UnauthorizedException('Playlist is not belong to user');
+
+    const updatedPlaylist = await this.playlistModel.findByIdAndUpdate(
+      playlistId,
+      { coverImage: coverImage },
+    );
+    return updatedPlaylist;
   }
 }
