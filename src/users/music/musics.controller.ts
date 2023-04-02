@@ -26,6 +26,7 @@ import {
   ApiBody,
   ApiConsumes,
   ApiParam,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -42,7 +43,7 @@ import { MusicsService } from './musics.service';
 export class MusicsController {
   constructor(private readonly musicsService: MusicsService) {}
   @Public()
-  @Get('/genre')
+  @Get('/availableGenre')
   @ApiResponse({
     status: 200,
     description: 'Return list of available genre',
@@ -54,6 +55,13 @@ export class MusicsController {
 
   @Public()
   @Get('')
+  @ApiQuery({
+    name: 'genre',
+    description: 'Genre names, seperated by ","',
+    type: String,
+    required: false,
+    example: 'Pop,Hip-Hip',
+  })
   @ApiResponse({
     status: 200,
     description: 'Return list of filtered music',
@@ -129,6 +137,10 @@ export class MusicsController {
         },
         coverImage: {
           type: 'file',
+        },
+        genre: {
+          type: 'array',
+          example: ['Pop', 'Hip-Hop'],
         },
       },
     },
