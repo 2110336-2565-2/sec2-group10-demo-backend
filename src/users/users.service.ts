@@ -194,7 +194,7 @@ export class UsersService {
       },
       {
         $match: {
-          following: user._id,
+          following: new mongoose.Types.ObjectId(id),
         },
       },
       {
@@ -228,11 +228,15 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException(`There isn't any user with id: ${id}`);
     }
+    const temp = [];
+    for (const id of user.following) {
+      temp.push(new mongoose.Types.ObjectId(id));
+    }
     const followingQuery = await this.userModel.aggregate([
       {
         $match: {
           _id: {
-            $in: user.following,
+            $in: temp,
           },
         },
       },
