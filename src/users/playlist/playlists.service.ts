@@ -1,30 +1,30 @@
-import { Model, Types } from "mongoose";
+import { Model, Types } from 'mongoose';
 
 import {
   ForbiddenException,
   Injectable,
-  NotFoundException
-} from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
+  NotFoundException,
+} from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 
-import { CreatePlaylistDto } from "../dto/create-playlist.dto";
-import { EditPlaylistDto } from "../dto/edit-playlist.dto";
+import { CreatePlaylistDto } from '../dto/create-playlist.dto';
+import { EditPlaylistDto } from '../dto/edit-playlist.dto';
 import {
   Playlist,
   PlaylistDocument,
-  PlaylistType
-} from "../schema/playlist.schema";
+  PlaylistType,
+} from '../schema/playlist.schema';
 import {
   AddMusicToPlaylistResponseDto,
   MusicsInPlaylistResponseDto,
-  RemoveMusicFromPlaylistResponseDto
-} from "./dto/musics-in-playlist-response.dto";
+  RemoveMusicFromPlaylistResponseDto,
+} from './dto/musics-in-playlist-response.dto';
 import {
   CreatePlaylistResponseDto,
   DeletePlaylistResponseDto,
   GetPlaylistInfoResponseDto,
-  UpdatePlaylistInfoResponseDto
-} from "./dto/playlist-response.dto";
+  UpdatePlaylistInfoResponseDto,
+} from './dto/playlist-response.dto';
 
 @Injectable()
 export class PlaylistsService {
@@ -223,6 +223,7 @@ export class PlaylistsService {
           albumId: 1,
           ownerId: 1,
           url: 1,
+          genre: 1,
         },
       });
 
@@ -246,6 +247,7 @@ export class PlaylistsService {
         ownerName:
           music.ownerId && music.ownerId.username ? music.ownerId.username : '',
         url: music.url ? music.url : '',
+        genre: music.genre ? music.genre : '',
       });
     }
 

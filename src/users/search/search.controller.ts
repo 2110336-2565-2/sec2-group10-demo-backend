@@ -4,7 +4,7 @@ import { ApiQuery, ApiResponse } from '@nestjs/swagger';
 
 import { Public } from '../../auth/public_decorator';
 import { JoiValidationPipe } from '../../utils/joiValidation.pipe';
-import { GetUsersInfoResponseDto } from '../dto/get-users.dto';
+import { GetArtistsInfoResponseDto } from '../dto/get-users.dto';
 import { GetMusicsResponseDto } from '../music/dto/get-musics-response.dto';
 import { GetPlaylistInfoResponseDto } from '../playlist/dto/playlist-response.dto';
 import { SearchService } from './search.service';
@@ -72,7 +72,7 @@ export class SearchController {
   @ApiResponse({
     status: 200,
     description: 'Return artists that match the search term',
-    type: [GetPlaylistInfoResponseDto],
+    type: [GetArtistsInfoResponseDto],
   })
   @ApiQuery({
     name: 'term',
@@ -91,7 +91,7 @@ export class SearchController {
     term: string = '',
     @Query('limit', new JoiValidationPipe(Joi.number().optional()))
     limit: number = 5,
-  ): Promise<GetUsersInfoResponseDto[]> {
+  ): Promise<GetArtistsInfoResponseDto[]> {
     return await this.searchService.searchArtists(term, limit);
   }
 }
