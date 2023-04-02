@@ -237,6 +237,7 @@ export class PlaylistsService {
           albumId: 1,
           ownerId: 1,
           url: 1,
+          genre: 1,
         },
       });
 
@@ -260,6 +261,7 @@ export class PlaylistsService {
         ownerName:
           music.ownerId && music.ownerId.username ? music.ownerId.username : '',
         url: music.url ? music.url : '',
+        genre: music.genre ? music.genre : '',
       });
     }
 
