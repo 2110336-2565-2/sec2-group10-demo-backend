@@ -146,6 +146,17 @@ export class UsersController {
     return this.usersService.update(params.id, user);
   }
 
+  // @ApiParam({ name: 'username' })
+  // @ApiOkResponse({
+  //   description: 'Return user',
+  //   type: User,
+  // })
+  // @Get('user/:username')
+  // @HttpCode(HttpStatus.OK)
+  // async findByUsername(@Param() params) {
+  //   return this.usersService.findOneByUsername(params.username);
+  // }
+
   @ApiParam({ name: 'email' })
   @ApiOkResponse({
     description: 'Return user',
