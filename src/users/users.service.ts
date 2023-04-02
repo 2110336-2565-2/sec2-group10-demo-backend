@@ -103,7 +103,13 @@ export class UsersService {
       const userUpdated = await this.userModel.findByIdAndUpdate(id, user, {
         new: true,
       });
-      return userUpdated;
+      const res: UserDto = {
+        userId: userUpdated._id,
+        username: userUpdated.username,
+        email: userUpdated.email,
+        profileImage: userUpdated.profileImage,
+      };
+      return res;
     } catch (err) {
       throw new NotFoundException(`There isn't any user with id: ${id}`);
     }
@@ -214,6 +220,7 @@ export class UsersService {
     const userDtoArray: UserDto[] = [];
     for (const user of queryArray) {
       const userDto: UserDto = {
+        userId: user._id,
         username: user.username,
         email: user.email,
         profileImage: user.profileImage,
@@ -279,6 +286,7 @@ export class UsersService {
     }
     user.username = username;
     const userDto: UserDto = {
+      userId: user._id.toString(),
       username: user.username,
       email: user.email,
       profileImage: user.profileImage,
@@ -297,6 +305,7 @@ export class UsersService {
     }
 
     const userDto: UserDto = {
+      userId: user._id.toString(),
       username: user.username,
       email: user.email,
       profileImage: profileImage,
