@@ -149,10 +149,22 @@ export class PlaylistsService {
   }
 
   async updatePlaylist(
+    userId: Types.ObjectId,
     playlistId: Types.ObjectId,
     editPlayList: EditPlaylistDto,
   ): Promise<UpdatePlaylistInfoResponseDto> {
-    const playlist = await this.playlistModel.findOneAndUpdate(
+    let playlist = await this.playlistModel.findOne(
+      { _id: playlistId },
+      { userId: 1 },
+    );
+
+    if (playlist.userId.toString() !== userId.toString()) {
+      throw new ForbiddenException(
+        `You don't have permission to update this playlist`,
+      );
+    }
+
+    playlist = await this.playlistModel.findOneAndUpdate(
       { _id: playlistId },
       editPlayList,
       {
@@ -180,8 +192,19 @@ export class PlaylistsService {
     return res;
   }
 
-  async deletePlaylist(playlistId: Types.ObjectId) {
-    const playlist = await this.playlistModel.findByIdAndDelete(playlistId, {
+  async deletePlaylist(userId: Types.ObjectId, playlistId: Types.ObjectId) {
+    let playlist = await this.playlistModel.findOne(
+      { _id: playlistId },
+      { userId: 1 },
+    );
+
+    if (playlist.userId.toString() !== userId.toString()) {
+      throw new ForbiddenException(
+        `You don't have permission to delete this playlist`,
+      );
+    }
+
+    playlist = await this.playlistModel.findByIdAndDelete(playlistId, {
       projection: {
         _id: 0,
         name: 1,
@@ -202,7 +225,7 @@ export class PlaylistsService {
       coverImage: playlist.coverImage,
     };
 
-    return playlist;
+    return res;
   }
 
   async getMusicsInPlaylist(

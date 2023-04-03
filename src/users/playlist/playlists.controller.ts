@@ -188,12 +188,14 @@ export class PlaylistsController {
     type: UpdatePlaylistInfoResponseDto,
   })
   async updatePlaylist(
+    @Req() req,
     @Param('id', new JoiValidationPipe(Joi.string().required()))
     playlistId: string,
     @Body() body: EditPlaylistDto,
   ): Promise<UpdatePlaylistInfoResponseDto> {
-    this.utilsService.validateMongoId(playlistId);
+    this.utilsService.validateMongoId([req.user.userId, playlistId]);
     return await this.playlistService.updatePlaylist(
+      new Types.ObjectId(req.user.userId),
       new Types.ObjectId(playlistId),
       body,
     );
@@ -211,11 +213,13 @@ export class PlaylistsController {
     type: DeletePlaylistResponseDto,
   })
   async deletePlaylist(
+    @Req() req,
     @Param('id', new JoiValidationPipe(Joi.string().required()))
     playlistId: string,
   ) {
-    this.utilsService.validateMongoId(playlistId);
+    this.utilsService.validateMongoId([req.user.userId, playlistId]);
     return await this.playlistService.deletePlaylist(
+      new Types.ObjectId(req.user.userId),
       new Types.ObjectId(playlistId),
     );
   }
