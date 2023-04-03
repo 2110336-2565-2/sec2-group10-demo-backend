@@ -1,4 +1,5 @@
 import { Response } from 'express';
+import { Types } from 'mongoose';
 import MulterGoogleCloudStorage from 'multer-cloud-storage';
 import { type } from 'os';
 import { FileMetadata } from 'src/cloudStorage/googleCloud.interface';
@@ -15,6 +16,7 @@ import { Controller, Param, Post } from '@nestjs/common';
 import {
   Body,
   HttpCode,
+  Query,
   Req,
   Res,
   UploadedFiles,
@@ -38,6 +40,8 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiParam,
+  ApiQuery,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 
@@ -349,5 +353,29 @@ export class UsersController {
     );
 
     return user;
+  }
+
+  @ApiResponse({
+    status: 200,
+    description: 'Returns a boolean indicating success',
+    schema: {
+      type: 'boolean',
+      example: true,
+    },
+  })
+  @ApiQuery({
+    name: 'artistId',
+    description: 'Artist Id to check if logged in user already follow',
+    type: String,
+    required: true,
+    example: '6429ae3fda8fc503c5f3bf37',
+  })
+  @Get('isFollowing')
+  async isFollowing(@Req() req, @Query('artistId') artistId: string) {
+    const isFollowing = await this.usersService.isFollowing(
+      req.user.userId,
+      new Types.ObjectId(artistId),
+    );
+    return isFollowing;
   }
 }

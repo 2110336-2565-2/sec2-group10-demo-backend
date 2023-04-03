@@ -314,4 +314,24 @@ export class UsersService {
     await this.update(user._id.toString(), user);
     return userDto;
   }
+
+  async isFollowing(
+    userId: mongoose.Types.ObjectId,
+    artistId: mongoose.Types.ObjectId,
+  ): Promise<boolean> {
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+    const artist = await this.userModel.findById(artistId);
+    if (!artist) {
+      throw new BadRequestException('Artist not found');
+    }
+    const followings = await this.getFollowing(userId.toString());
+    const isFollowing = followings.some(function (following) {
+      return new mongoose.Types.ObjectId(following.userId).equals(artistId);
+    });
+
+    return isFollowing;
+  }
 }
