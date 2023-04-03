@@ -4,10 +4,15 @@ export const uploadMusicImageFilter = (req, file, callback) => {
   // check if file format is correct
   return file &&
     file.mimetype &&
-    file.mimetype.match(/(audio|image)\/(mpeg|mp3|flac|m4a|wav|jpg|jpeg|png)$/)
+    file.mimetype.match(
+      /(audio|image)\/(mpeg|mp3|mp4|flac|m4a|wav|jpg|jpeg|png)$/,
+    )
     ? callback(null, true)
     : callback(
-        new BadRequestException('Only audio and image file are allowed'),
+        new BadRequestException(
+          'Only audio and image file are allowed, your file type is ',
+          file.mimetype,
+        ),
         false,
       );
 };
