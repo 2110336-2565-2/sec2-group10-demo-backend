@@ -304,6 +304,7 @@ export class UsersService {
       throw new BadRequestException('User not found');
     }
 
+    user.profileImage = profileImage;
     const userDto: UserDto = {
       userId: user._id.toString(),
       username: user.username,
