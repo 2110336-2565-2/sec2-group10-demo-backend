@@ -327,9 +327,10 @@ export class UsersService {
     if (!artist) {
       throw new BadRequestException('Artist not found');
     }
-    const isFollowing = artist.following.some((followerId) =>
-      followerId.equals(userId),
-    );
+    const followings = await this.getFollowing(userId.toString());
+    const isFollowing = followings.some(function (following) {
+      return new mongoose.Types.ObjectId(following.userId).equals(artistId);
+    });
 
     return isFollowing;
   }
