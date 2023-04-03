@@ -87,7 +87,7 @@ export class MusicsService {
 
   async getMusicDuration(url: string) {
     const buffer = await this.urlToBuffer(url);
-    const metadata = await parseBuffer(buffer, 'audio/mpeg');
+    const metadata = await parseBuffer(buffer);
     return Math.round(metadata.format.duration);
   }
 
