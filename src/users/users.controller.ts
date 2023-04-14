@@ -199,8 +199,8 @@ export class UsersController {
   @HttpCode(HttpStatus.CONFLICT)
   @Put('role/artist')
   async upgradeToArtist(@Req() req, @Body() body: UpgradeToArtistDto) {
-    await this.usersService.updateArtistBankAccount(req.user.userId, body);
     await this.usersService.setRoleUser(req.user.email, Role.Artist);
+    await this.usersService.updateArtistBankAccount(req.user.userId, body);
 
     return { message: 'success to upgrade to artist', success: true };
   }
