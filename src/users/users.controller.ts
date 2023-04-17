@@ -10,6 +10,7 @@ import {
 } from 'src/cloudStorage/googleCloud.utils';
 import { Role } from 'src/common/enums/role';
 import { profilePlaceHolder } from 'src/constants/placeHolder';
+import { UPGRADE_PREMIUM_PRICE } from 'src/constants/user';
 import { Roles } from 'src/roles/roles.decorator';
 
 import { Controller, Param, Post } from '@nestjs/common';
@@ -31,6 +32,7 @@ import {
 import { HttpStatus } from '@nestjs/common/enums';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiBody,
   ApiConflictResponse,
@@ -43,6 +45,7 @@ import {
   ApiQuery,
   ApiResponse,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
 import { Public } from '../auth/public_decorator';
@@ -211,8 +214,24 @@ export class UsersController {
     description: 'Success to upgrade to premium',
   })
   @ApiConflictResponse({ description: 'User already has premium role' })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized',
+  })
+  @ApiNotFoundResponse({
+    description: 'User not found',
+  })
+  @ApiBadRequestResponse({
+    description: 'Cannot make a payment',
+  })
+  @ApiForbiddenResponse({
+    description: 'Forbidden resource',
+  })
   @HttpCode(HttpStatus.OK)
   @HttpCode(HttpStatus.CONFLICT)
+  @HttpCode(HttpStatus.UNAUTHORIZED)
+  @HttpCode(HttpStatus.NOT_FOUND)
+  @HttpCode(HttpStatus.BAD_REQUEST)
+  @HttpCode(HttpStatus.FORBIDDEN)
   @Put('role/premium')
   async upgradeToPremium(@Req() req, @Body() body: UpgradeToPremiumDto) {
     const result = await this.usersService.chargeCreditCard(
