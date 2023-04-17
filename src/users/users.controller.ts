@@ -63,7 +63,6 @@ import { UserDto } from './dto/user.dto';
 import { PlaylistsService } from './playlist/playlists.service';
 import { User } from './schema/users.schema';
 import { UsersService } from './users.service';
-import { UPGRADE_PREMIUM_PRICE } from 'src/constants/user';
 
 @ApiTags('users')
 @ApiBearerAuth()
