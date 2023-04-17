@@ -71,6 +71,18 @@ export class Advertisement {
   creationDate: Date;
 
   /**
+   * Image of the music
+   * @example https://www.google.com
+   * @required
+   * @type string
+   */
+  @ApiProperty({ example: 'https://www.google.com' })
+  @Prop({
+    required: true,
+  })
+  coverImage: string;
+
+  /**
    * URL of the advertisment
    * @example https://www.google.com
    * @required
