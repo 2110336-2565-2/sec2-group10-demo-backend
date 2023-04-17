@@ -60,6 +60,7 @@ import { UserDto } from './dto/user.dto';
 import { PlaylistsService } from './playlist/playlists.service';
 import { User } from './schema/users.schema';
 import { UsersService } from './users.service';
+import { UPGRADE_PREMIUM_PRICE } from 'src/constants/user';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -198,7 +199,8 @@ export class UsersController {
   @HttpCode(HttpStatus.CONFLICT)
   @Put('role/artist')
   async upgradeToArtist(@Req() req, @Body() body: UpgradeToArtistDto) {
-    await this.usersService.setRoleUser(req.user.email, Role.Artist, body);
+    await this.usersService.setRoleUser(req.user.email, Role.Artist);
+    await this.usersService.updateArtistBankAccount(req.user.userId, body);
 
     return { message: 'success to upgrade to artist', success: true };
   }
@@ -213,7 +215,18 @@ export class UsersController {
   @HttpCode(HttpStatus.CONFLICT)
   @Put('role/premium')
   async upgradeToPremium(@Req() req, @Body() body: UpgradeToPremiumDto) {
-    await this.usersService.setRoleUser(req.user.email, Role.Premium, body);
+    const result = await this.usersService.chargeCreditCard(
+      req.user.userId,
+      UPGRADE_PREMIUM_PRICE,
+      'thb',
+      body.token,
+    );
+
+    if (result.failure_code) {
+      return { message: 'cannot make a payment', success: false };
+    }
+
+    await this.usersService.setRoleUser(req.user.email, Role.Premium);
 
     return { message: 'success to upgrade to premium', success: true };
   }

@@ -1,6 +1,7 @@
 import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
 import * as mongoose from 'mongoose';
+import * as Omise from 'omise';
 import { Role } from 'src/common/enums/role';
 import { profilePlaceHolder } from 'src/constants/placeHolder';
 
@@ -12,7 +13,11 @@ import {
 } from '@nestjs/common/exceptions';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 
-import { CreateUserDto, UpdateUserDto } from './dto/create-user.dto';
+import {
+  CreateUserDto,
+  UpdateUserDto,
+  UpgradeToArtistDto,
+} from './dto/create-user.dto';
 import { ProfileDto } from './dto/profile.dto';
 import { UserDto } from './dto/user.dto';
 import { PlaylistsService } from './playlist/playlists.service';
@@ -20,12 +25,19 @@ import { User, UserDocument } from './schema/users.schema';
 
 @Injectable()
 export class UsersService {
+  private omise: Omise.IOmise;
   constructor(
     @InjectConnection() private readonly connection: mongoose.Connection,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @Inject(PlaylistsService)
     private readonly playlistsService: PlaylistsService,
-  ) {}
+  ) {
+    this.omise = Omise({
+      publicKey: process.env.OMISE_PUBLIC_KEY,
+      secretKey: process.env.OMISE_SECRET_KEY,
+      omiseVersion: '2019-05-29',
+    });
+  }
 
   async create(createUserDto: CreateUserDto): Promise<CreateUserDto> {
     // Set email to lowercase
@@ -124,17 +136,14 @@ export class UsersService {
     }
   }
 
-  async setRoleUser(email: string, role: Role, update_data: any): Promise<any> {
+  async setRoleUser(email: string, role: Role): Promise<any> {
     const user = await this.findOneByEmail(email);
 
     if (user.roles.includes(role)) {
       throw new ConflictException(`User already has ${role} role`);
     }
+
     user.roles.push(role);
-    if (role === Role.Artist) {
-      user.accountNumber = update_data.accountNumber;
-      user.bankName = update_data.bankName;
-    }
 
     return await this.update(user._id.toString(), user);
   }
@@ -333,5 +342,31 @@ export class UsersService {
     });
 
     return isFollowing;
+  }
+
+  async chargeCreditCard(
+    userId: string,
+    amount: number,
+    currency: string,
+    token: string,
+  ) {
+    return await this.omise.charges.create({
+      amount: amount * 100, // amount in satang
+      currency: currency,
+      card: token,
+      description: 'Charge for ' + userId,
+    });
+  }
+
+  async updateArtistBankAccount(userId: string, data: UpgradeToArtistDto) {
+    const user = await this.findOneById(userId);
+
+    if (user.roles.includes(Role.Artist) == false) {
+      throw new BadRequestException('User is not an artist');
+    }
+
+    user.accountNumber = Number(data.accountNumber);
+    user.bankName = data.bankName;
+    await this.update(userId, user);
   }
 }

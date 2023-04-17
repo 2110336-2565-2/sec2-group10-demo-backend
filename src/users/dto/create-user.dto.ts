@@ -39,18 +39,8 @@ export class UpgradeToPremiumDto {
   @IsString()
   name: string;
 
-  @ApiProperty({ example: '5555555555554444' })
+  @ApiProperty({ example: 'tokn_**************' })
   @IsNotEmpty()
   @IsString()
-  cardNumber: string;
-
-  @ApiProperty({ example: '12/25' })
-  @IsNotEmpty()
-  @IsString()
-  expireDate: string;
-
-  @ApiProperty({ example: '123' })
-  @IsNotEmpty()
-  @IsString()
-  cvc: string;
+  token: string;
 }

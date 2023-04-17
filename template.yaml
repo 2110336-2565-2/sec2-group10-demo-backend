@@ -30,6 +30,8 @@ Globals:
         CLOUD_STORAGE_USER_MUSIC_BUCKET: !Sub '{{resolve:ssm:/demoByTuder/${Environment}/cloudStorageUserMusicBucket}}'
         CLOUD_STORAGE_USER_MUSIC_LIMIT_SIZE: !Sub '{{resolve:ssm:/demoByTuder/${Environment}/cloudStorageUserMusicLimitSize}}'
         CLOUD_STORAGE_CREDENTIALS: !Sub '{{resolve:ssm:/demoByTuder/${Environment}/cloudStorageCredentials}}'
+        OMISE_PUBLIC_KEY: !Sub '{{resolve:ssm:/demoByTuder/${Environment}/omisePublicKey}}'
+        OMISE_SECRET_KEY: !Sub '{{resolve:ssm:/demoByTuder/${Environment}/omiseSecretKey}}'
 
 Resources:
   # IAM
