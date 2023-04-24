@@ -1,10 +1,10 @@
 import { IsEnum, IsOptional } from 'class-validator';
 import { SchemaTypes, Types } from 'mongoose';
-import { Genre } from 'src/constants/music';
 
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 
+import { Genre } from '../../constants/music';
 import { User } from './users.schema';
 
 export type MusicDocument = Music & Document;
