@@ -128,7 +128,7 @@ describe('PlaylistsService', () => {
           mockMusic1._id,
         ]),
       ).rejects.toThrowError(
-        new NotFoundException(
+        new ForbiddenException(
           `You don't have permission to remove music from this playlist`,
         ),
       );
