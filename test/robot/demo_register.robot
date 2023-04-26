@@ -7,7 +7,7 @@ Test Teardown       Close All Browsers
 *** Test Cases ***
 TC1-1 168
     [Tags]    all input
-    Open Browser    https://dev.d2g12c5od8o9j.amplifyapp.com/signup    chrome
+    Open Browser    https://main.d2g12c5od8o9j.amplifyapp.com/signup    chrome
     Maximize Browser Window
 
     Wait Until Element Is Visible    //*[@class="MuiBox-root mui-style-5ul8ui"] 
@@ -37,7 +37,7 @@ TC1-1 168
 
 TC1-2 268
     [Tags]    all input
-    Open Browser    https://dev.d2g12c5od8o9j.amplifyapp.com/signup    chrome
+    Open Browser    https://main.d2g12c5od8o9j.amplifyapp.com/signup    chrome
     Maximize Browser Window
 
     Wait Until Element Is Visible    //*[@class="MuiBox-root mui-style-5ul8ui"] 
@@ -70,7 +70,7 @@ TC1-2 268
     
 TC1-3 368
     [Tags]    all input
-    Open Browser    https://dev.d2g12c5od8o9j.amplifyapp.com/signup    chrome
+    Open Browser    https://main.d2g12c5od8o9j.amplifyapp.com/signup    chrome
     Maximize Browser Window
 
     Wait Until Element Is Visible    //*[@class="MuiBox-root mui-style-5ul8ui"] 
@@ -103,7 +103,7 @@ TC1-3 368
 
 TC1-4 457
     [Tags]    all input
-    Open Browser    https://dev.d2g12c5od8o9j.amplifyapp.com/signup    chrome
+    Open Browser    https://main.d2g12c5od8o9j.amplifyapp.com/signup    chrome
     Maximize Browser Window
 
     Wait Until Element Is Visible    //*[@class="MuiBox-root mui-style-5ul8ui"] 
@@ -141,7 +141,7 @@ TC1-4 457
     
 TC1-5 458
     [Tags]    all input
-    Open Browser    https://dev.d2g12c5od8o9j.amplifyapp.com/signup    chrome
+    Open Browser    https://main.d2g12c5od8o9j.amplifyapp.com/signup    chrome
     Maximize Browser Window
 
     Wait Until Element Is Visible    //*[@class="MuiBox-root mui-style-5ul8ui"] 
@@ -176,7 +176,7 @@ TC1-5 458
 
 TC1-6 467
     [Tags]    all input
-    Open Browser    https://dev.d2g12c5od8o9j.amplifyapp.com/signup    chrome
+    Open Browser    https://main.d2g12c5od8o9j.amplifyapp.com/signup    chrome
     Maximize Browser Window
 
     Wait Until Element Is Visible    //*[@class="MuiBox-root mui-style-5ul8ui"] 
@@ -209,7 +209,7 @@ TC1-6 467
 
 TC1-7 468
     [Tags]    all input
-    Open Browser    https://dev.d2g12c5od8o9j.amplifyapp.com/signup    chrome
+    Open Browser    https://main.d2g12c5od8o9j.amplifyapp.com/signup    chrome
     Maximize Browser Window
 
     Wait Until Element Is Visible    //*[@class="MuiBox-root mui-style-5ul8ui"] 
