@@ -10,10 +10,7 @@ export const createApp = async () => {
   const app = await NestFactory.create(AppModule, new ExpressAdapter());
 
   app.enableCors({
-    origin: '*',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
+    origin: true,
   });
 
   const config = new DocumentBuilder()
