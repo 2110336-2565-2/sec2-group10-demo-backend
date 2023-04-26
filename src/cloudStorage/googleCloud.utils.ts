@@ -5,7 +5,7 @@ export const uploadMusicImageFilter = (req, file, callback) => {
   return file &&
     file.mimetype &&
     file.mimetype.match(
-      /(audio|image)\/(mpeg|mp3|mp4|flac|m4a|wav|jpg|jpeg|png)$/,
+      /(audio|image)\/(mpeg|mp3|mp4|flac|m4a|wav|jpg|jpeg|png|x-m4a)$/,
     )
     ? callback(null, true)
     : callback(
