@@ -168,7 +168,7 @@ export class PlaylistsController {
     @Body() updatePlaylistImageDto: UpdatePlaylistImageDto,
   ) {
     const playlist = await this.playlistService.updateCoverImage(
-      req.user.userId,
+      new Types.ObjectId(req.user.userId),
       new Types.ObjectId(updatePlaylistImageDto.playlistId),
       files.coverImage[0].linkUrl,
     );
