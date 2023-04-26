@@ -2,8 +2,6 @@ import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
 import * as mongoose from 'mongoose';
 import * as Omise from 'omise';
-import { Role } from 'src/common/enums/role';
-import { profilePlaceHolder } from 'src/constants/placeHolder';
 
 import { Inject, Injectable } from '@nestjs/common';
 import {
@@ -13,6 +11,8 @@ import {
 } from '@nestjs/common/exceptions';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 
+import { Role } from '../common/enums/role';
+import { profilePlaceHolder } from '../constants/placeHolder';
 import {
   CreateUserDto,
   UpdateUserDto,

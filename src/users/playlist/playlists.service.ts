@@ -1,9 +1,4 @@
 import { Model, Types } from 'mongoose';
-import { Role } from 'src/common/enums/role';
-import {
-  albumPlaceHolder,
-  playlistPlaceHolder,
-} from 'src/constants/placeHolder';
 
 import {
   BadRequestException,
@@ -14,6 +9,11 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
+import { Role } from '../../common/enums/role';
+import {
+  albumPlaceHolder,
+  playlistPlaceHolder,
+} from '../../constants/placeHolder';
 import { CreatePlaylistDto } from '../dto/create-playlist.dto';
 import { EditPlaylistDto } from '../dto/edit-playlist.dto';
 import {
