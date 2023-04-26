@@ -198,7 +198,10 @@ export class PlaylistsService {
       { userId: 1 },
     );
 
-    if (playlist.userId.toString() !== userId.toString()) {
+    if (
+      playlist.userId.toString() !== userId.toString() ||
+      playlist.isAlbum === true
+    ) {
       throw new ForbiddenException(
         `You don't have permission to delete this playlist`,
       );
