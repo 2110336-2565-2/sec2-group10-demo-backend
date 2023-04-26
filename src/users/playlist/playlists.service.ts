@@ -195,7 +195,7 @@ export class PlaylistsService {
   async deletePlaylist(userId: Types.ObjectId, playlistId: Types.ObjectId) {
     let playlist = await this.playlistModel.findOne(
       { _id: playlistId },
-      { userId: 1 },
+      { userId: 1, isAlbum: 1 },
     );
 
     if (
