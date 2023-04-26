@@ -9,13 +9,13 @@ import { Music, MusicSchema } from '../../schema/music.schema';
 import { Playlist, PlaylistSchema } from '../../schema/playlist.schema';
 import { User, UserSchema } from '../../schema/users.schema';
 import { RemoveMusicFromPlaylistResponseDto } from '../dto/musics-in-playlist-response.dto';
-import { PlaylistsService } from '../playlists.service';
+import { PlaylistsSplitService } from './playlists.split.service';
 import { createMusic } from './stubs/musics.stub';
 import { createPlaylist } from './stubs/playlists.stub';
 import { createUser } from './stubs/users.stub';
 
-describe('PlaylistsService', () => {
-  let playlistsService: PlaylistsService;
+describe('playlistsSplitSercice', () => {
+  let playlistsSplitService: PlaylistsSplitService;
   let userModel: Model<User>;
   let musicModel: Model<Music>;
   let playlistModel: Model<Playlist>;
@@ -34,7 +34,7 @@ describe('PlaylistsService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        PlaylistsService,
+        PlaylistsSplitService,
         {
           provide: getModelToken(User.name),
           useValue: userModel,
@@ -52,11 +52,13 @@ describe('PlaylistsService', () => {
     userModel = module.get<Model<User>>(getModelToken(User.name));
     playlistModel = module.get<Model<Playlist>>(getModelToken(Playlist.name));
     musicModel = module.get<Model<Music>>(getModelToken(Music.name));
-    playlistsService = module.get<PlaylistsService>(PlaylistsService);
+    playlistsSplitService = module.get<PlaylistsSplitService>(
+      PlaylistsSplitService,
+    );
   });
 
   it('should be defined', () => {
-    expect(playlistsService).toBeDefined();
+    expect(playlistsSplitService).toBeDefined();
   });
 
   afterEach(async () => {
@@ -106,7 +108,7 @@ describe('PlaylistsService', () => {
         mockWrongPlaylistId = new Types.ObjectId();
       }
       await expect(
-        playlistsService.removeMusicFromPlaylist(
+        playlistsSplitService.removeMusicFromPlaylist(
           mockUser._id,
           mockWrongPlaylistId,
           [mockMusic1._id],
@@ -124,9 +126,11 @@ describe('PlaylistsService', () => {
         mockWrongUserId = new Types.ObjectId();
       }
       await expect(
-        playlistsService.removeMusicFromPlaylist(mockWrongUserId, mockAlbumId, [
-          mockMusic1._id,
-        ]),
+        playlistsSplitService.removeMusicFromPlaylist(
+          mockWrongUserId,
+          mockAlbumId,
+          [mockMusic1._id],
+        ),
       ).rejects.toThrowError(
         new ForbiddenException(
           `You don't have permission to remove music from this playlist`,
@@ -136,16 +140,18 @@ describe('PlaylistsService', () => {
 
     it('should get ForbiddenError when user tries to remove music from its own album', async () => {
       await expect(
-        playlistsService.removeMusicFromPlaylist(mockUser._id, mockAlbumId, [
-          mockMusic1._id,
-        ]),
+        playlistsSplitService.removeMusicFromPlaylist(
+          mockUser._id,
+          mockAlbumId,
+          [mockMusic1._id],
+        ),
       ).rejects.toThrowError(
         new ForbiddenException(`You can't remove music from this album`),
       );
     });
 
     it('should remove a music from playlist', async () => {
-      const actual = playlistsService.removeMusicFromPlaylist(
+      const actual = playlistsSplitService.removeMusicFromPlaylist(
         mockUser._id,
         mockPlaylist._id,
         [mockMusic1._id],
@@ -161,7 +167,7 @@ describe('PlaylistsService', () => {
     });
 
     it('should remove multiple musics from playlist', async () => {
-      const actual = playlistsService.removeMusicFromPlaylist(
+      const actual = playlistsSplitService.removeMusicFromPlaylist(
         mockUser._id,
         mockPlaylist._id,
         [mockMusic1._id, mockMusic2._id],
