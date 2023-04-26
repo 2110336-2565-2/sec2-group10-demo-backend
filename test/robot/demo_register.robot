@@ -5,7 +5,7 @@ Test Teardown       Close All Browsers
 
 
 *** Test Cases ***
-TC1-1
+TC1-1 168
     [Tags]    all input
     Open Browser    https://dev.d2g12c5od8o9j.amplifyapp.com/signup    chrome
     Maximize Browser Window
@@ -24,7 +24,7 @@ TC1-1
     ${confirmPassword}=    Get Value    //*[@name="confirmPassword"]
     Should Be Equal    ${confirmPassword}    12345
 
-    #password not match
+    #password match
     Should Be Equal    ${confirmPassword}    ${password}
 
 
@@ -34,8 +34,8 @@ TC1-1
 
     #verrify error message
     Wait Until Page Contains  Please enter a valid email address  timeout=3s
-    
-TC1-3
+
+TC1-2 268
     [Tags]    all input
     Open Browser    https://dev.d2g12c5od8o9j.amplifyapp.com/signup    chrome
     Maximize Browser Window
@@ -57,7 +57,7 @@ TC1-3
     ${confirmPassword}=    Get Value    //*[@name="confirmPassword"]
     Should Be Equal    ${confirmPassword}    12345
 
-    #password not match
+    #password match
     Should Be Equal    ${confirmPassword}    ${password}
 
 
@@ -67,18 +67,18 @@ TC1-3
 
     #verrify error message
     Wait Until Page Contains  Please enter a valid email address  timeout=3s
-
-TC1-4
+    
+TC1-3 368
     [Tags]    all input
     Open Browser    https://dev.d2g12c5od8o9j.amplifyapp.com/signup    chrome
     Maximize Browser Window
 
     Wait Until Element Is Visible    //*[@class="MuiBox-root mui-style-5ul8ui"] 
     
-    #Input Email : seRnlnwza007@gmail.com 
-    Input text    //*[@name="email"]    seRnlnwza007@gmail.com 
+    #Input Email : singsong@email.com
+    Input text    //*[@name="email"]    singsong@email.com
     ${email}=    Get Value    //*[@name="email"]
-    Should Be Equal    ${email}    seRnlnwza007@gmail.com 
+    Should Be Equal    ${email}    singsong@email.com
 
     #Input Password : 12345
     Input text    //*[@name="password"]    12345
@@ -90,7 +90,7 @@ TC1-4
     ${confirmPassword}=    Get Value    //*[@name="confirmPassword"]
     Should Be Equal    ${confirmPassword}    12345
 
-    #password not match
+    #password match
     Should Be Equal    ${confirmPassword}    ${password}
 
 
@@ -98,33 +98,70 @@ TC1-4
     #Signup Button
     Click Element    //*[@class="MuiTypography-root MuiTypography-h6 mui-style-haplq4"]
 
-    #Verify Success Message
-    Wait Until Element Contains    //*[@class="MuiTypography-root MuiTypography-h2 mui-style-16mb4mf"]    LOGIN    timeout=10s
-    
-    
-TC1-5
+    #verrify error message
+    Wait Until Page Contains  This email address has already been registered  timeout=5s
+
+TC1-4 457
     [Tags]    all input
     Open Browser    https://dev.d2g12c5od8o9j.amplifyapp.com/signup    chrome
     Maximize Browser Window
 
     Wait Until Element Is Visible    //*[@class="MuiBox-root mui-style-5ul8ui"] 
     
-    #Input Email : singsong@email.com 
-    Input text    //*[@name="email"]    singsong@email.com 
+    #Input Email : sernlnwza007@gmail.com 
+    Input text    //*[@name="email"]    sernlnwza007@gmail.com 
     ${email}=    Get Value    //*[@name="email"]
-    Should Be Equal    ${email}    singsong@email.com 
+    Should Be Equal    ${email}    sernlnwza007@gmail.com 
 
-    #Input Password : 12345
-    Input text    //*[@name="password"]    12345
+    #Input Password : 1234
+    Input text    //*[@name="password"]    1234
     ${password}=    Get Value    //*[@name="password"]
-    Should Be Equal    ${password}    12345
+    Should Be Equal    ${password}    1234
 
-    #Input Confirm Password : 12345
-    Input text    //*[@name="confirmPassword"]    12345
+    #Input Confirm Password : 1234
+    Input text    //*[@name="confirmPassword"]    1235
     ${confirmPassword}=    Get Value    //*[@name="confirmPassword"]
-    Should Be Equal    ${confirmPassword}    12345
+    Should Be Equal    ${confirmPassword}    1235
 
     #password not match
+    Should Not Be Equal    ${confirmPassword}    ${password}
+
+
+
+    #Signup Button
+    Click Element    //*[@class="MuiTypography-root MuiTypography-h6 mui-style-haplq4"]
+
+    #verrify error message
+    Wait Until Page Contains  Password must be at least 5 characters  timeout=5s  
+    Wait Until Page Contains  Password is not match  timeout=5s  
+
+    #Verify Success Message
+    #Wait Until Element Contains    //*[@class="MuiTypography-root MuiTypography-h2 mui-style-16mb4mf"]    LOGIN    timeout=10s
+    
+    
+TC1-5 458
+    [Tags]    all input
+    Open Browser    https://dev.d2g12c5od8o9j.amplifyapp.com/signup    chrome
+    Maximize Browser Window
+
+    Wait Until Element Is Visible    //*[@class="MuiBox-root mui-style-5ul8ui"] 
+    
+    #Input Email : sernlnwza007@gmail.com 
+    Input text    //*[@name="email"]    sernlnwza007@gmail.com 
+    ${email}=    Get Value    //*[@name="email"]
+    Should Be Equal    ${email}    sernlnwza007@gmail.com 
+
+    #Input Password : 1234
+    Input text    //*[@name="password"]    1234
+    ${password}=    Get Value    //*[@name="password"]
+    Should Be Equal    ${password}    1234
+
+    #Input Confirm Password : 1234
+    Input text    //*[@name="confirmPassword"]    1234
+    ${confirmPassword}=    Get Value    //*[@name="confirmPassword"]
+    Should Be Equal    ${confirmPassword}    1234
+
+    #password match
     Should Be Equal    ${confirmPassword}    ${password}
     
 
@@ -134,10 +171,10 @@ TC1-5
 
     #verrify error message
 
-    Wait Until Page Contains  This email address has already been registered.  timeout=5s
+     Wait Until Page Contains  Password must be at least 5 characters  timeout=5s
     
 
-TC1-6
+TC1-6 467
     [Tags]    all input
     Open Browser    https://dev.d2g12c5od8o9j.amplifyapp.com/signup    chrome
     Maximize Browser Window
@@ -150,14 +187,14 @@ TC1-6
     Should Be Equal    ${email}    sernlnwza007@gmail.com
 
     #Input Password : 12345
-    Input text    //*[@name="password"]    1234
+    Input text    //*[@name="password"]    12345
     ${password}=    Get Value    //*[@name="password"]
-    Should Be Equal    ${password}    1234
+    Should Be Equal    ${password}    12345
 
-    #Input Confirm Password : 12345
-    Input text    //*[@name="confirmPassword"]    1235
+    #Input Confirm Password : 12346
+    Input text    //*[@name="confirmPassword"]    12346
     ${confirmPassword}=    Get Value    //*[@name="confirmPassword"]
-    Should Be Equal    ${confirmPassword}    1235
+    Should Be Equal    ${confirmPassword}    12346
 
     #password not match
     Should Not Be Equal    ${confirmPassword}    ${password}
@@ -168,10 +205,9 @@ TC1-6
 
     #verrify error message
 
-    Wait Until Page Contains  Password must be at least 5 characters  timeout=5s  
     Wait Until Page Contains  Password is not match  timeout=5s  
 
-TC1-7
+TC1-7 468
     [Tags]    all input
     Open Browser    https://dev.d2g12c5od8o9j.amplifyapp.com/signup    chrome
     Maximize Browser Window
@@ -182,72 +218,6 @@ TC1-7
     Input text    //*[@name="email"]    sernlnwza007@gmail.com 
     ${email}=    Get Value    //*[@name="email"]
     Should Be Equal    ${email}    sernlnwza007@gmail.com 
-
-    #Input Password : 12345
-    Input text    //*[@name="password"]    1234
-    ${password}=    Get Value    //*[@name="password"]
-    Should Be Equal    ${password}    1234
-
-    #Input Confirm Password : 12345
-    Input text    //*[@name="confirmPassword"]    1234
-    ${confirmPassword}=    Get Value    //*[@name="confirmPassword"]
-    Should Be Equal    ${confirmPassword}    1234
-
-    #password  match
-    Should Be Equal    ${confirmPassword}    ${password}
-
-
-    #Signup Button
-    Click Element    //*[@class="MuiTypography-root MuiTypography-h6 mui-style-haplq4"]
-
-    #verrify error message
-
-    Wait Until Page Contains  Password must be at least 5 characters  timeout=5s
-
-TC1-8
-    [Tags]    all input
-    Open Browser    https://dev.d2g12c5od8o9j.amplifyapp.com/signup    chrome
-    Maximize Browser Window
-
-    Wait Until Element Is Visible    //*[@class="MuiBox-root mui-style-5ul8ui"] 
-    
-    #Input Email : sernlnwza007@gmail.com 
-    Input text    //*[@name="email"]    sernlnwza007@gmail.com 
-    ${email}=    Get Value    //*[@name="email"]
-    Should Be Equal    ${email}    sernlnwza007@gmail.com 
-
-    #Input Password : 12345
-    Input text    //*[@name="password"]    12345
-    ${password}=    Get Value    //*[@name="password"]
-    Should Be Equal    ${password}    12345
-
-    #Input Confirm Password : 12345
-    Input text    //*[@name="confirmPassword"]    12346
-    ${confirmPassword}=    Get Value    //*[@name="confirmPassword"]
-    Should Be Equal    ${confirmPassword}    12346
-
-    #password  not match
-    Should Not Be Equal    ${confirmPassword}    ${password}
-
-
-    #Signup Button
-    Click Element    //*[@class="MuiTypography-root MuiTypography-h6 mui-style-haplq4"]
-
-    #verrify error message
-
-    Wait Until Page Contains  Password is not match  timeout=5s   
-
-TC1-9
-    [Tags]    all input
-    Open Browser    https://dev.d2g12c5od8o9j.amplifyapp.com/signup    chrome
-    Maximize Browser Window
-
-    Wait Until Element Is Visible    //*[@class="MuiBox-root mui-style-5ul8ui"] 
-    
-    #Input Email : sernlnwza007@gmail.com 
-    Input text    //*[@name="email"]    sernlnwza008@gmail.com 
-    ${email}=    Get Value    //*[@name="email"]
-    Should Be Equal    ${email}    sernlnwza008@gmail.com 
 
     #Input Password : 12345
     Input text    //*[@name="password"]    12345
@@ -266,8 +236,8 @@ TC1-9
     #Signup Button
     Click Element    //*[@class="MuiTypography-root MuiTypography-h6 mui-style-haplq4"]
 
-     
-    #Verify Success Message
+    #verrify success message
+
     Wait Until Element Contains    //*[@class="MuiTypography-root MuiTypography-h2 mui-style-16mb4mf"]    LOGIN    timeout=10s
 
 
